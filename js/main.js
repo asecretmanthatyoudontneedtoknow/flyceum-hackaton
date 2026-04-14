@@ -12,7 +12,7 @@ const slogans = ["Архитектура будущего.", "Хочешь бы�
 
 let state = { activePreset: 45, firstLessonStart: '08:05', schedule: {} };
 let newsData = [];
-let currentCaptchaAnswer = 0; // Переменная для хранения правильного ответа каптчи
+let currentCaptchaAnswer = 0; 
 
 // --- СИНХРОНИЗАЦИЯ НАСТРОЕК ---
 function listenToScheduleSettings() {
@@ -32,18 +32,14 @@ function listenToScheduleSettings() {
     });
 }
 
-// --- ЗАГРУЗКА РАСПИСАНИЯ (С GITHUB) ---
+// --- ЛОКАЛЬНАЯ ЗАГРУЗКА РАСПИСАНИЯ ---
 async function loadSchedule() {
     try {
-        // Ссылка RAW ИЗ GITHUB
         const scheduleUrl = 'https://raw.githubusercontent.com/asecretmanthatyoudontneedtoknow/flyceum-hackaton/refs/heads/main/schedule.json'; 
-        
-        // Добавляем параметр cache: 'no-store', чтобы браузер всегда качал свежую версию
         const response = await fetch(scheduleUrl, { cache: 'no-store' }); 
         
         if (!response.ok) throw new Error("Файл не найден");
         const rawData = await response.json();
-        
         let classesData = {};
 
         rawData.forEach(item => {
@@ -61,7 +57,7 @@ async function loadSchedule() {
         state.schedule = classesData;
         updateClassWidget();
     } catch (e) {
-        document.getElementById('currentStatus').innerHTML = '<div class="py-10 text-center text-red-500 font-bold">Ошибка загрузки расписания!</div>';
+        document.getElementById('currentStatus').innerHTML = '<div class="py-10 text-center text-red-500 font-bold">Файл schedule.json не найден!</div>';
     }
 }
 
@@ -227,11 +223,11 @@ window.closeNews = function() {
     setTimeout(() => { document.getElementById('modal-img').src = ''; }, 300);
 };
 
-// --- ВИРТУАЛЬНАЯ ПРИЕМНАЯ И КАПТЧА ---
-const GEMINI_API_KEY = import.meta.env ? import.meta.env.VITE_GEMINI_API_KEY : '';
+// --- ВИРТУАЛЬНАЯ ПРИЕМНАЯ И КАПТЧА (OPENAI) ---
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY || '';
 
 function generateCaptcha() {
-    const num1 = Math.floor(Math.random() * 10) + 1; // Число от 1 до 10
+    const num1 = Math.floor(Math.random() * 10) + 1;
     const num2 = Math.floor(Math.random() * 10) + 1;
     currentCaptchaAnswer = num1 + num2;
     
@@ -245,35 +241,45 @@ function generateCaptcha() {
 async function checkTextWithAI(text) {
     const badWordsRegex = /хуй|пизд|еба|ебн|бля|шлюх|мраз|урод|сука|сучк/i; 
     
-    if (!GEMINI_API_KEY || GEMINI_API_KEY === '') {
+    if (!OPENAI_API_KEY || OPENAI_API_KEY === '') {
         if (badWordsRegex.test(text.toLowerCase())) return "БЛОК: Найдена нецензурная лексика.";
         return "ОК";
     }
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${OPENAI_API_KEY}`
+            },
             body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: `Ты строгий модератор школьного сайта. Проверь этот текст на маты (включая завуалированные), оскорбления, токсичность, угрозы или унижение достоинства учителей и учеников. 
+                model: "gpt-4o-mini", 
+                messages: [
+                    {
+                        role: "system",
+                        content: `Ты строгий модератор школьного сайта. Проверь текст на маты (включая завуалированные), оскорбления, токсичность, угрозы или унижение достоинства учителей и учеников. 
                         Если текст нормальный, ответь ровно одно слово: "ОК".
-                        Если текст содержит нарушения, ответь строго в формате: "БЛОК: [напиши причину коротко]".
-                        Текст для проверки: "${text}"`
-                    }]
-                }]
+                        Если текст содержит нарушения, ответь строго в формате: "БЛОК: [напиши причину коротко на русском]".`
+                    },
+                    {
+                        role: "user",
+                        content: `Текст для проверки: "${text}"`
+                    }
+                ],
+                temperature: 0.3
             })
         });
 
         const data = await response.json();
-        if (data.candidates && data.candidates[0].content.parts[0].text) {
-            const aiResponse = data.candidates[0].content.parts[0].text.trim();
+        if (data.choices && data.choices.length > 0) {
+            const aiResponse = data.choices[0].message.content.trim();
             if (aiResponse.toUpperCase().includes("ОК")) return "ОК";
             return aiResponse;
         }
         return "ОК"; 
     } catch (err) {
+        console.error("OpenAI Error:", err);
         if (badWordsRegex.test(text.toLowerCase())) return "БЛОК: Найдена нецензурная лексика.";
         return "ОК"; 
     }
@@ -289,16 +295,14 @@ document.getElementById('reception-form')?.addEventListener('submit', async (e) 
     errorBox.classList.add('hidden');
     successBox.classList.add('hidden');
 
-    // 1. ПРОВЕРКА КАПТЧИ
     const userAnswer = parseInt(document.getElementById('rec-captcha').value);
     if (userAnswer !== currentCaptchaAnswer) {
         errorBox.innerText = "Неверный ответ на проверку от роботов! Попробуйте еще раз.";
         errorBox.classList.remove('hidden');
-        generateCaptcha(); // Обновляем пример при ошибке
+        generateCaptcha(); 
         return; 
     }
 
-    // Если каптча пройдена, собираем данные
     const name = document.getElementById('rec-name').value || 'Аноним';
     const role = document.getElementById('rec-role').value;
     const target = document.getElementById('rec-target').value;
@@ -307,7 +311,6 @@ document.getElementById('reception-form')?.addEventListener('submit', async (e) 
     loadingScreen.classList.remove('hidden'); 
     loadingScreen.classList.add('flex');
 
-    // 2. ПРОВЕРКА НЕЙРОСЕТЬЮ
     const aiResult = await checkTextWithAI(message);
 
     loadingScreen.classList.add('hidden');
@@ -316,18 +319,17 @@ document.getElementById('reception-form')?.addEventListener('submit', async (e) 
     if (aiResult !== "ОК") {
         errorBox.innerText = `Сообщение заблокировано. Причина: ${aiResult.replace("БЛОК:", "").trim()}`;
         errorBox.classList.remove('hidden');
-        generateCaptcha(); // Обновляем каптчу, чтобы боты не брутфорсили
+        generateCaptcha(); 
         return; 
     }
 
-    // 3. ОТПРАВКА В БАЗУ
     try {
         await addDoc(collection(db, "reception"), {
             name: name, role: role, target: target, message: message, date: serverTimestamp()
         });
         successBox.classList.remove('hidden');
         document.getElementById('reception-form').reset();
-        generateCaptcha(); // Обновляем для следующего сообщения
+        generateCaptcha(); 
     } catch (error) {
         errorBox.innerText = `Ошибка базы данных при отправке.`;
         errorBox.classList.remove('hidden');
@@ -347,7 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSchedule();
     loadNews();
     listenToScheduleSettings(); 
-    generateCaptcha(); // Инициализация каптчи при загрузке страницы
+    generateCaptcha(); 
     
     document.getElementById('classSelect').addEventListener('change', updateClassWidget);
 });

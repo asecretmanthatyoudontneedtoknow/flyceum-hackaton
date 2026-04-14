@@ -19,7 +19,6 @@
         }
     </script>
     <style>
-        /* Плавные переходы для темной темы */
         body { transition: background-color 0.8s ease, color 0.8s ease; }
         .border-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 24px; transition: all 0.3s ease; }
         .page-section { display: none; animation: fadeIn 0.4s ease-out forwards; }
@@ -39,7 +38,6 @@
             background-position: center;
         }
 
-        /* --- ДИЗАЙН РАЗРЕЗА БАННЕРА --- */
         .hero-overlay {
             position: absolute;
             top: 0; left: 0;
@@ -55,7 +53,6 @@
             }
         }
 
-        /* Кнопки ДЕСКТОПНОГО меню */
         .top-nav-btn {
             border: 2px solid transparent;
             border-radius: 9999px;
@@ -68,11 +65,9 @@
         .top-nav-btn:hover { border-color: #0f172a; color: #0f172a; }
         .top-nav-btn.active { border-color: #3b82f6; color: #3b82f6; background-color: #eff6ff; }
 
-        /* Кнопки МОБИЛЬНОГО меню */
         .mobile-nav-btn.active { color: #3b82f6; }
         .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem); }
 
-        /* Темная тема */
         .dark-theme { background-color: #0f172a !important; color: #f1f5f9 !important; }
         .dark-theme .bg-[#fafafa] { background-color: #0f172a !important; }
         .dark-theme .bg-white, .dark-theme .border-card { background-color: #1e293b !important; border-color: #334155 !important; }
@@ -323,7 +318,7 @@
                         
                         <div class="bg-slate-50 p-5 sm:p-6 rounded-2xl border border-slate-100 flex flex-col items-center text-center">
                             <div class="h-24 sm:h-32 flex items-center justify-center mb-4 sm:mb-6 w-full bg-white rounded-xl shadow-sm overflow-hidden p-2">
-                                <img src="http://flyceum.ru/image/site/lic/flag_lyceum.jpg" onerror="this.src='https://via.placeholder.com/286x170/eff6ff/3b82f6?text=Флаг+Лицея'" alt="Флаг лицея" class="max-h-full object-contain">
+                                <img src="http://flyceum.ru/image/site/lic/flag_lyceum.jpg" class="max-h-full object-contain">
                             </div>
                             <h4 class="text-lg sm:text-xl font-black text-brand-600 uppercase mb-2 sm:mb-3">Флаг лицея</h4>
                             <p class="text-xs sm:text-sm text-slate-600 font-medium">Флаг двухцветный. Голубой цвет как часть государственного флага, фиолетовый цвет как символ мирового интеллекта. Звезды как символ дерзаний, озаренья, мечты.</p>
@@ -331,7 +326,7 @@
 
                         <div class="bg-slate-50 p-5 sm:p-6 rounded-2xl border border-slate-100 flex flex-col items-center text-center">
                             <div class="h-24 sm:h-32 flex items-center justify-center mb-4 sm:mb-6 w-full bg-white rounded-xl shadow-sm overflow-hidden p-2">
-                                <img src="http://flyceum.ru/image/site/lic/gerb_lyceum.jpg" onerror="this.src='https://via.placeholder.com/101x160/eff6ff/3b82f6?text=Эмблема'" alt="Эмблема лицея" class="max-h-full object-contain">
+                                <img src="http://flyceum.ru/image/site/lic/gerb_lyceum.jpg" class="max-h-full object-contain">
                             </div>
                             <h4 class="text-lg sm:text-xl font-black text-brand-600 uppercase mb-2 sm:mb-3">Эмблема лицея</h4>
                             <p class="text-xs sm:text-sm text-slate-600 font-medium">Спираль как символ бесконечного развития, мудрости, познания, вечности.</p>
@@ -471,20 +466,17 @@
                 };
 
                 let tHtml = '';
-                
-                const fallbackImg = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='200' viewBox='0 0 150 200'%3E%3Crect width='150' height='200' fill='%23eff6ff'/%3E%3Ctext x='50%25' y='50%25' font-family='sans-serif' font-weight='bold' font-size='16' fill='%233b82f6' text-anchor='middle' dy='.3em'%3EФОТО%3C/text%3E%3C/svg%3E";
 
                 for(const [cat, list] of Object.entries(teachersByCat)) {
                     tHtml += `<h3 class="text-xl sm:text-2xl font-black italic uppercase mt-8 sm:mt-12 mb-4 sm:mb-6 text-brand-600 border-b pb-3 sm:pb-4">${cat}</h3>`;
                     tHtml += `<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">`;
                     
                     list.forEach(t => {
-                        // Прямая ссылка на твой GitHub
                         const imgUrl = `https://raw.githubusercontent.com/asecretmanthatyoudontneedtoknow/flyceum-hackaton/refs/heads/main/teacher/${t.i}`;
                         
                         tHtml += `
                         <div class="border-card p-4 flex flex-col items-center text-center hover:border-brand-500 hover:shadow-lg transition">
-                            <img src="${imgUrl}" onerror="this.onerror=null; this.src='${fallbackImg}'" class="w-24 h-32 sm:w-28 sm:h-36 object-cover rounded-xl shadow-sm mb-3 sm:mb-4 border border-slate-100 bg-brand-50">
+                            <img src="${imgUrl}" class="w-24 h-32 sm:w-28 sm:h-36 object-cover rounded-xl shadow-sm mb-3 sm:mb-4 border border-slate-100 bg-brand-50">
                             <h4 class="font-black text-xs sm:text-sm text-slate-900 leading-tight mb-2">${t.n}</h4>
                             <p class="text-[9px] sm:text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed mt-auto">${t.r}</p>
                         </div>`;
