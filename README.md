@@ -1,1 +1,0 @@
-# flyceum-hackaton

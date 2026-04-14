@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Первый IT-лицей | Официальный портал</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { brand: { 50: '#eff6ff', 500: '#3b82f6', 600: '#2563eb' } }
+                }
+            }
+        }
+    </script>
+    <style>
+        .border-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 24px; transition: all 0.3s ease; height: 100%; }
+        .page-section { display: none; animation: fadeIn 0.4s ease-out forwards; }
+        .active-page { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        #news-modal { display: none; }
+        #news-modal.active { display: flex; animation: modalIn 0.3s ease-out forwards; }
+        @keyframes modalIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Стиль для заднего фона */
+        .hero-banner {
+            /* Если файла header.png нет, загрузится красивая картинка школы по умолчанию */
+            background-image: url('header.png'), url('https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1500&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="bg-[#fafafa] text-slate-900 antialiased flex flex-col min-h-screen">
+
+    <!-- ШАПКА -->
+    <header class="fixed top-0 w-full z-50 px-4 py-4">
+        <nav class="bg-white/95 backdrop-blur-md max-w-[1500px] mx-auto rounded-2xl border border-slate-200 px-6 py-4 flex justify-between items-center shadow-sm">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.showPage('home')">
+                <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white font-black text-lg">1</div>
+                <span class="text-xl font-black tracking-tighter hidden sm:block uppercase italic">IT-PORTAL</span>
+            </div>
+            
+            <!-- НОВОЕ МЕНЮ НАВИГАЦИИ -->
+            <div class="hidden xl:flex items-center gap-6 font-bold text-slate-500 text-[10px] uppercase tracking-widest">
+                <button onclick="window.showPage('home')" class="nav-link hover:text-brand-600 transition">Главная</button>
+                <button onclick="window.showPage('about')" class="nav-link hover:text-brand-600 transition">О лицее</button>
+                <button onclick="window.showPage('parents')" class="nav-link hover:text-brand-600 transition">Родителям</button>
+                <button onclick="window.showPage('history')" class="nav-link hover:text-brand-600 transition">История лицея</button>
+                <button onclick="window.showPage('contacts')" class="nav-link hover:text-brand-600 transition">Контакты</button>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div id="live-clock" class="hidden md:block font-mono font-bold text-[10px] bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-400">00:00:00</div>
+                <a href="admin.html" target="_blank" class="bg-slate-900 text-white px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-brand-600 transition">Admin</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-grow pt-32 pb-24 px-6 max-w-[1500px] mx-auto w-full">
+        
+        <!-- ГЛАВНАЯ СТРАНИЦА -->
+        <div id="page-home" class="page-section active-page">
+            
+            <!-- БЛОК С КАРТИНКОЙ НА ФОНЕ ("В РАЗРЕЗЕ") -->
+            <div class="relative rounded-[40px] overflow-hidden mb-16 p-8 md:p-16 shadow-2xl hero-banner">
+                <!-- Темное затемнение поверх картинки, чтобы текст читался -->
+                <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm z-0"></div>
+                
+                <div class="relative z-10 grid lg:grid-cols-12 gap-12 items-center">
+                    
+                    <!-- Текст на фоне -->
+                    <div class="lg:col-span-7 space-y-8">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-brand-500 text-white text-[9px] font-black uppercase tracking-[0.2em] shadow-lg">Regional Education Leader</div>
+                        <h1 class="text-5xl lg:text-8xl font-black tracking-tighter leading-none text-white italic">
+                            <span id="hero-title">Проектируй будущее.</span>
+                        </h1>
+                        <div class="text-lg text-slate-300 max-w-2xl font-medium leading-relaxed">
+                            <p>КГУ «Первый городской общеобразовательный IT-лицей» — это передовое образовательное пространство. Интеграция фундаментальных наук и цифровых технологий.</p>
+                        </div>
+                    </div>
+
+                    <!-- Карточка Live Monitor поверх картинки -->
+                    <div class="lg:col-span-5">
+                        <div class="bg-white/95 backdrop-blur-xl border border-white/20 p-8 rounded-3xl shadow-2xl h-full">
+                            <div class="flex justify-between items-center mb-8 border-b border-slate-100 pb-6">
+                                <span class="font-black text-slate-900 uppercase text-xs tracking-widest italic">Live Monitor</span>
+                                <select id="classSelect" class="bg-slate-50 border border-slate-200 text-slate-900 text-[10px] rounded-xl px-4 py-2 font-black cursor-pointer outline-none hover:border-brand-500 transition">
+                                    <option value="8А">8А</option><option value="8Б" selected>8Б</option><option value="8В">8В</option>
+                                    <option value="9А">9А</option><option value="9Б">9Б</option>
+                                    <option value="10А">10А</option><option value="10Б">10Б</option>
+                                    <option value="11А">11А</option><option value="11Б">11Б</option>
+                                </select>
+                            </div>
+                            <div id="currentStatus" class="min-h-[160px]"></div>
+                            <div id="daySchedule" class="mt-4 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Блок новостей -->
+            <div class="mb-16">
+                <div class="flex items-end justify-between border-b border-slate-100 pb-4 mb-8">
+                    <h3 class="text-3xl font-black uppercase italic tracking-tighter">События лицея</h3>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Live Database</p>
+                </div>
+                
+                <div id="news-container" class="grid md:grid-cols-3 gap-6">
+                    <div class="text-slate-400 text-sm italic font-bold">Подключение к базе данных...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ЗАГЛУШКИ ДЛЯ НОВЫХ СТРАНИЦ -->
+        <div id="page-about" class="page-section">
+            <h2 class="text-5xl font-black italic mb-8 uppercase tracking-tighter">О лицее</h2>
+            <div class="border-card p-10"><p class="text-slate-500">Страница в разработке...</p></div>
+        </div>
+        
+        <div id="page-parents" class="page-section">
+            <h2 class="text-5xl font-black italic mb-8 uppercase tracking-tighter">Родителям</h2>
+            <div class="border-card p-10"><p class="text-slate-500">Страница в разработке...</p></div>
+        </div>
+
+        <div id="page-history" class="page-section">
+            <h2 class="text-5xl font-black italic mb-8 uppercase tracking-tighter">История лицея</h2>
+            <div class="border-card p-10"><p class="text-slate-500">Страница в разработке...</p></div>
+        </div>
+
+        <div id="page-contacts" class="page-section">
+            <h2 class="text-5xl font-black italic mb-8 uppercase tracking-tighter">Контакты</h2>
+            <div class="border-card p-10"><p class="text-slate-500">Страница в разработке...</p></div>
+        </div>
+
+    </main>
+
+    <!-- НОВЫЙ ПОДВАЛ (ТОЧЬ-В-ТОЧЬ ПО ВАШЕЙ КАРТИНКЕ) -->
+    <footer class="bg-white border-t border-slate-200 pt-16 pb-12 px-6 mt-auto">
+        <div class="max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-8">
+            
+            <!-- Колонка 1 -->
+            <div class="space-y-6">
+                <h3 class="text-xl font-black text-slate-900 uppercase">IT LYCEUM 95</h3>
+                <p class="text-sm text-slate-500 font-medium leading-relaxed">Первый городской общеобразовательный IT-лицей. Инновационное пространство для развития талантов.</p>
+                <div class="flex gap-3 pt-2">
+                    <a href="#" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-500 font-bold hover:bg-brand-500 hover:text-white transition">VK</a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-500 font-bold hover:bg-brand-500 hover:text-white transition">TG</a>
+                </div>
+            </div>
+
+            <!-- Колонка 2 -->
+            <div>
+                <h4 class="font-black text-slate-900 text-base mb-6">Документация</h4>
+                <ul class="space-y-4 text-sm text-slate-500 font-medium">
+                    <li><a href="#" class="hover:text-brand-600 transition">Паспорт лицея</a></li>
+                    <li><a href="#" class="hover:text-brand-600 transition">Официальные документы</a></li>
+                    <li><a href="#" class="hover:text-brand-600 transition">Положение о школьной форме</a></li>
+                    <li><a href="#" class="hover:text-brand-600 transition">Государственные закупки</a></li>
+                </ul>
+            </div>
+
+            <!-- Колонка 3 -->
+            <div>
+                <h4 class="font-black text-slate-900 text-base mb-6">Жизнь лицея</h4>
+                <ul class="space-y-4 text-sm text-slate-500 font-medium">
+                    <li><a href="#" class="hover:text-brand-600 transition">Книга рекордов и побед</a></li>
+                    <li><a href="#" class="hover:text-brand-600 transition">Наша гордость</a></li>
+                    <li><a href="#" class="hover:text-brand-600 transition">Спортивные достижения</a></li>
+                    <li><a href="#" class="hover:text-brand-600 transition">Фонд им. А.С. Слухаевского</a></li>
+                </ul>
+            </div>
+
+            <!-- Колонка 4 -->
+            <div>
+                <h4 class="font-black text-slate-900 text-base mb-6">Телефоны доверия</h4>
+                <div class="space-y-5 text-sm">
+                    <div>
+                        <p class="text-slate-400 mb-1">Защита прав детей (СКО):</p>
+                        <a href="tel:+77152460654" class="font-bold text-slate-900 hover:text-brand-600 transition">+7 (7152) 46-06-54</a>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 mb-1">Экстренная психологическая помощь:</p>
+                        <a href="tel:88000808150" class="font-bold text-slate-900 hover:text-brand-600 transition">8-800-080-8150</a>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 mb-1">Call-center Уполномоченного по правам ребенка:</p>
+                        <a href="tel:111" class="font-black text-brand-600 text-xl hover:text-brand-800 transition">111</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- ПОЛНОЭКРАННОЕ МОДАЛЬНОЕ ОКНО НОВОСТЕЙ -->
+    <div id="news-modal" class="fixed inset-0 z-[100] bg-white flex-col md:flex-row overflow-hidden">
+        <button onclick="window.closeNews()" class="absolute top-4 right-4 md:top-8 md:right-8 w-14 h-14 rounded-full bg-slate-100 text-slate-900 border border-slate-200 shadow-sm flex items-center justify-center font-black text-2xl hover:bg-red-500 hover:text-white transition z-50">✕</button>
+        
+        <div class="md:w-1/2 h-64 md:h-full bg-slate-100 relative">
+            <img id="modal-img" src="" alt="Фото новости" class="w-full h-full object-cover">
+        </div>
+        
+        <div class="md:w-1/2 p-6 md:p-16 h-full overflow-y-auto custom-scrollbar relative bg-white">
+            <div class="max-w-2xl mx-auto md:mx-0 pt-8 md:pt-0">
+                <p id="modal-date" class="text-[11px] font-black text-brand-600 uppercase tracking-[0.3em] mb-4">Date</p>
+                <h2 id="modal-title" class="text-4xl md:text-6xl font-black tracking-tighter leading-none mb-10 italic">Title</h2>
+                <div id="modal-body" class="text-slate-600 font-medium leading-relaxed space-y-6 text-base md:text-lg"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+
+</body>
+</html>

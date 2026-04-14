@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Админ-панель | IT-LYCEUM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        .border-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 24px; transition: 0.3s; }
+        .hidden { display: none !important; }
+        body { background: #fafafa; font-family: 'Inter', sans-serif; color: #1e293b; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div id="login-screen" class="max-w-md mx-auto mt-20 border-card p-10">
+        <h2 class="text-2xl font-black mb-6 uppercase italic">Security Access</h2>
+        <input type="email" id="email" placeholder="Email (Admin)" class="w-full mb-4 p-3 border rounded-xl bg-slate-50 outline-none">
+        <input type="password" id="password" placeholder="Пароль" class="w-full mb-6 p-3 border rounded-xl bg-slate-50 outline-none">
+        <button id="login-btn" class="w-full bg-slate-900 text-white p-4 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-brand-600 transition">Вход</button>
+    </div>
+
+    <div id="admin-dashboard" class="hidden max-w-[800px] mx-auto">
+        <div class="flex justify-between items-center mb-10 border-b pb-6 border-slate-200">
+            <h1 class="text-3xl font-black uppercase italic tracking-tighter">Управление Новостями</h1>
+            <div class="flex gap-4">
+                <a href="index.html" class="text-[10px] font-black text-brand-600 uppercase border border-brand-100 px-4 py-2 rounded-xl hover:bg-brand-50">На сайт</a>
+                <button id="logout-btn" class="text-[10px] font-black text-red-500 uppercase border border-red-100 px-4 py-2 rounded-xl hover:bg-red-50">Выход</button>
+            </div>
+        </div>
+
+        <div class="border-card p-8">
+            <h3 class="text-lg font-black uppercase italic mb-6">Опубликовать новость</h3>
+            
+            <label class="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Обложка новости (Фото)</label>
+            <input type="file" id="news-image" accept="image/*" class="w-full mb-4 p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 cursor-pointer">
+            
+            <input type="text" id="news-title" placeholder="Заголовок новости" class="w-full mb-3 p-3 border rounded-xl text-sm font-bold outline-none focus:border-brand-500">
+            <textarea id="news-body" placeholder="Текст сообщения..." class="w-full mb-4 p-3 border rounded-xl text-sm min-h-[160px] outline-none focus:border-brand-500"></textarea>
+            
+            <button id="post-news-btn" class="w-full bg-brand-600 text-white p-4 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-brand-700 transition shadow-sm">Опубликовать</button>
+            <p id="upload-status" class="mt-4 text-center text-sm font-black uppercase text-brand-600"></p>
+        </div>
+    </div>
+    <script type="module" src="js/admin.js"></script>
+</body>
+</html>
