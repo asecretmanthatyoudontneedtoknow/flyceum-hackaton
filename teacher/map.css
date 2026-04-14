@@ -1,0 +1,62 @@
+.level1 {
+  border-radius:5px;
+  padding:5px;
+  -webkit-transition-duration: 0.5s; /* Safari */
+  transition-duration: 0.5s;
+  width:150px;
+  background: linear-gradient(to right,#c5fbf3 97%,#001bbf 3px);
+  border:1px solid blue;
+  box-shadow:0px 0px 15px 1px gray;
+  margin:3px;
+}
+.level1:hover {
+  border-radius:5px;
+  border:1px solid blue;
+  box-shadow:none;
+  color:white;
+   background: linear-gradient(to right,#c5fbf3,#001bbf);
+
+}
+
+.level2 {
+  border-radius:5px;
+  position:inherit;
+  left:50px;
+  padding:5px;
+  -webkit-transition-duration: 0.5s; /* Safari */
+  transition-duration: 0.5s;
+  width:200px;
+  background: linear-gradient(to right,#9ef9d1 97%,#046614 3px);
+  border:1px solid blue;
+  box-shadow:0px 0px 15px 1px gray;
+  margin:3px;
+}
+.level2:hover {
+  border-radius:5px;
+  border:1px solid blue;
+  box-shadow:none;
+  color:white;
+   background: linear-gradient(to right,#9ef9d1,#046614);
+
+}
+
+.level3 {
+  border-radius:5px;
+  position:inherit;
+  left:100px;
+  padding:5px;
+  -webkit-transition-duration: 0.5s; /* Safari */
+  transition-duration: 0.5s;
+  width:200px;
+  background: linear-gradient(to right,#eefac0 97%,#faec52 3px);
+  border:1px solid blue;
+  box-shadow:0px 0px 15px 1px gray;
+  margin:3px;
+}
+.level3:hover {
+  border-radius:5px;
+  border:1px solid blue;
+  box-shadow:none;
+  color:red;
+   background: linear-gradient(to right,#eefac0,#faec52);
+}

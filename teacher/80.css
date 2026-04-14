@@ -1,0 +1,40 @@
+.anim-parent {
+    width: 214px;
+    height: 285px;
+    position: relative;
+}
+
+.pobeda {
+	position:absolute;
+	height:285px;
+	width:214px;
+	top:0;
+	left:0;
+	overflow:hidden;
+	z-index:2;
+}
+.sub-pobeda {
+	position:absolute;
+	height:285px;
+	width:214px;
+	top:0;
+	left:0;
+	overflow:hidden;
+	z-index:1;
+}
+
+#pobeda-img, #sub-pobeda-img {
+    width: 214px;
+}
+.notes {
+	background:linear-gradient(to right,#ffffff,#ff0000);
+	background-color:#fed877;
+	color:yellow;
+	text-shadow:1px 1px 1px black;
+	text-align:center;
+	font-weight: bolder;
+	border-bottom:1px solid red;
+	padding:5 0;
+	width:214px;
+}
+

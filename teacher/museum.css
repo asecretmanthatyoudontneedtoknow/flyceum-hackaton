@@ -1,0 +1,134 @@
+.live {
+  height:30px;
+  display:block;
+  position:relative;
+  background-color:#9adcfb;
+  font-family:verdana;
+  font-size:12pt;
+  color:white;
+  padding-right:5px;
+  text-align:center;
+  border:1px solid blue;
+  border-radius:0 0 7px 7px;
+  text-shadow:1px 1px 1px black;
+  box-shadow:2px 2px 10px black;
+}
+
+#mn-live-mus {
+	display:block;
+	position:relative;
+	margin-top:5px;
+}
+
+.main_out {
+   padding:5px;
+}
+
+.link-img-ms {
+ 	text-decoration:none;
+  	color:white;
+  	padding:2px;
+}
+.link-img-ms:hover {
+  	color:blue;
+}
+
+#a_l, #a_r {
+	display:inline-block;
+	transform: translateY(-50%);
+	background-color:white;
+	border-radius:20px;
+}
+
+#a_l:hover, #a_r:hover {
+	background-color:red;
+}
+
+.img-book-record {
+	width:200px;
+	height:133px;
+	margin-bottom:20px;
+	border:1px solid #723504;
+	box-shadow:0px 0px 4px black;
+	display:block;
+	text-align:left;
+	font-size:13px;
+	color:#f31e74;
+	text-shadow:0px 0px 2px white;
+}
+
+.img-book-record:hover {
+	cursor:pointer;
+	border:1px solid gray;
+	opacity:0.5;
+	box-shadow:none;
+}
+
+
+.list-mus {
+	padding:2px 2px 0 2px;
+	margin-bottom:3px;
+	border:1px solid #006500;
+	box-shadow:2px 2px 1px #76f776;
+	width:200px;
+	height:20px;
+	font-size:8pt;
+	color:blue;
+	list-style-type:none;
+	cursor:pointer;
+	position:relative;
+	text-transform: capitalize;
+}
+
+.list-mus:hover {
+	color:red;
+}
+
+.box-line-list {
+	position:absolute;
+	left:0px;
+	top:17px;
+	background: linear-gradient(to right, green, red);
+	width:0px;
+	height:1px;
+}
+
+
+
+.t__tab {
+   width:20%;
+   font-weight:bold;
+   color:blue;
+   text-shadow:1px 1px 1px black;
+   vertical-align:top;
+}
+
+.t__tab_cont {
+   width:80%;
+}
+
+.t__tab, .t__tab_cont {
+  font-size:10pt;
+}
+
+.t__link {
+	color:#a0187b;
+	cursor:pointer;
+	}
+
+.t__link:hover {
+    color:blue;
+}
+
+.for__teacher {
+	font-size:12pt;
+	color:#06ac58;
+	text-shadow:1px 1px 0px black;
+}
+
+#emblema {
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:70px;
+}
