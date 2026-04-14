@@ -34,10 +34,19 @@ function listenToScheduleSettings() {
 
 // --- ЛОКАЛЬНАЯ ЗАГРУЗКА РАСПИСАНИЯ ---
 async function loadSchedule() {
+// --- ЛОКАЛЬНАЯ ЗАГРУЗКА РАСПИСАНИЯ ---
+async function loadSchedule() {
     try {
-        const response = await fetch('schedule.json');
+        // ВСТАВЬ СЮДА СВОЮ ССЫЛКУ RAW ИЗ GITHUB
+        const scheduleUrl = 'https://raw.githubusercontent.com/asecretmanthatyoudontneedtoknow/flyceum-hackaton/refs/heads/main/schedule.json'; 
+        
+        // Добавляем параметр cache: 'no-store', чтобы браузер всегда качал свежую версию, а не брал старую из памяти
+        const response = await fetch(scheduleUrl, { cache: 'no-store' }); 
+        
         if (!response.ok) throw new Error("Файл не найден");
         const rawData = await response.json();
+        
+        // ... (остальной код функции без изменений)
         let classesData = {};
 
         rawData.forEach(item => {
