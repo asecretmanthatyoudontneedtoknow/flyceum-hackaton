@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Первый IT-лицей | Официальный портал</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { brand: { 50: '#eff6ff', 500: '#3b82f6', 600: '#2563eb', 900: '#1e3a8a' } }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Плавные переходы для темной темы */
+        body { transition: background-color 0.8s ease, color 0.8s ease; }
+        .border-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 24px; transition: all 0.3s ease; }
+        .page-section { display: none; animation: fadeIn 0.4s ease-out forwards; }
+        .active-page { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        #news-modal { display: none; }
+        #news-modal.active { display: flex; animation: modalIn 0.3s ease-out forwards; }
+        @keyframes modalIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .hero-banner {
+            background-image: url('https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1500&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Кнопки ДЕСКТОПНОГО меню */
+        .top-nav-btn {
+            border: 2px solid transparent;
+            border-radius: 9999px;
+            padding: 0.4rem 1.25rem;
+            color: #64748b;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+            font-weight: 700;
+        }
+        .top-nav-btn:hover { border-color: #0f172a; color: #0f172a; }
+        .top-nav-btn.active { border-color: #3b82f6; color: #3b82f6; background-color: #eff6ff; }
+
+        /* Кнопки МОБИЛЬНОГО меню */
+        .mobile-nav-btn.active { color: #3b82f6; }
+        .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem); }
+
+        /* Темная тема */
+        .dark-theme { background-color: #0f172a !important; color: #f1f5f9 !important; }
+        .dark-theme .bg-[#fafafa] { background-color: #0f172a !important; }
+        .dark-theme .bg-white, .dark-theme .border-card { background-color: #1e293b !important; border-color: #334155 !important; }
+        .dark-theme .text-slate-900 { color: #f8fafc !important; }
+        .dark-theme .text-slate-600, .dark-theme .text-slate-500 { color: #cbd5e1 !important; }
+        .dark-theme header nav, .dark-theme #bottom-nav { background-color: rgba(30, 41, 59, 0.95) !important; border-color: #334155 !important; }
+        .dark-theme footer { background-color: #1e293b !important; border-color: #334155 !important; }
+        .dark-theme .bg-slate-50 { background-color: #0f172a !important; }
+        .dark-theme .text-brand-600 { color: #60a5fa !important; }
+        .dark-theme .top-nav-btn { color: #94a3b8; }
+        .dark-theme .top-nav-btn:hover { border-color: #f8fafc; color: #f8fafc; }
+        .dark-theme .top-nav-btn.active { background-color: rgba(37, 99, 235, 0.15) !important; border-color: #3b82f6 !important; color: #60a5fa !important; }
+        .dark-theme .mobile-nav-btn.active { color: #60a5fa !important; }
+
+        .pride-tab.active { background-color: #2563eb; color: white; border-color: #2563eb; }
+        .pride-content { display: none; }
+        .pride-content.active { display: block; animation: fadeIn 0.3s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-[#fafafa] text-slate-900 antialiased flex flex-col min-h-screen relative z-0 pb-16 xl:pb-0">
+
+    <canvas id="rain-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-[-1] opacity-0 transition-opacity duration-1000"></canvas>
+
+    <header class="fixed top-0 w-full z-50 px-2 sm:px-4 py-4">
+        <nav class="bg-white/95 backdrop-blur-md max-w-[1500px] mx-auto rounded-2xl border border-slate-200 px-4 py-3 flex justify-between items-center shadow-sm transition-colors duration-500">
+            
+            <div class="flex items-center gap-3 cursor-pointer pl-1 sm:pl-2" onclick="window.showPage('home')">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 bg-brand-600 rounded-xl flex items-center justify-center text-white font-black text-base sm:text-lg">1</div>
+                <span class="text-lg sm:text-xl font-black tracking-tighter italic">Первый IT-лицей</span>
+            </div>
+            
+            <div class="hidden xl:flex items-center gap-2 text-[15px]">
+                <button onclick="window.showPage('home')" class="top-nav-btn active">Главная</button>
+                <button onclick="window.showPage('about')" class="top-nav-btn">История</button>
+                <button onclick="window.showPage('parents')" class="top-nav-btn">Родителям</button>
+                <button onclick="window.showPage('pride')" class="top-nav-btn">Гордость</button>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-3 pr-1">
+                <div id="live-clock" class="hidden md:block font-mono font-bold text-[11px] border border-slate-200 px-4 py-2.5 rounded-full text-slate-400 tracking-wider">00:00:00</div>
+            </div>
+        </nav>
+    </header>
+
+    <nav id="bottom-nav" class="xl:hidden fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-slate-200 z-[100] pb-safe transition-colors duration-500">
+        <div class="flex justify-around items-center px-1 pt-2">
+            <button onclick="window.showPage('home')" class="mobile-nav-btn active flex flex-col items-center justify-center w-16 text-slate-400 transition-colors">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Главная</span>
+            </button>
+            <button onclick="window.showPage('about')" class="mobile-nav-btn flex flex-col items-center justify-center w-16 text-slate-400 transition-colors">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="text-[9px] font-bold uppercase tracking-wider">История</span>
+            </button>
+            <button onclick="window.showPage('parents')" class="mobile-nav-btn flex flex-col items-center justify-center w-16 text-slate-400 transition-colors">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Родителям</span>
+            </button>
+            <button onclick="window.showPage('pride')" class="mobile-nav-btn flex flex-col items-center justify-center w-16 text-slate-400 transition-colors">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Гордость</span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="flex-grow pt-24 sm:pt-32 pb-8 sm:pb-24 px-4 sm:px-6 max-w-[1500px] mx-auto w-full">
+        
+        <div id="page-home" class="page-section active-page">
+            <div class="relative rounded-[30px] sm:rounded-[40px] overflow-hidden mb-10 sm:mb-16 p-6 sm:p-8 md:p-16 shadow-2xl hero-banner">
+                <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm z-0"></div>
+                <div class="relative z-10 grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                    <div class="lg:col-span-7 space-y-6 sm:space-y-8">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-brand-500 text-white text-[9px] font-black uppercase tracking-[0.2em] shadow-lg">Лучшие из лучших</div>
+                        <h1 class="text-4xl sm:text-5xl lg:text-8xl font-black tracking-tighter leading-tight sm:leading-none text-white italic">
+                            <span id="hero-title">Проектируй будущее.</span>
+                        </h1>
+                        <div class="text-base sm:text-lg text-slate-300 max-w-2xl font-medium leading-relaxed">
+                            <p>КГУ «Первый городской общеобразовательный IT-лицей» — это передовое образовательное пространство. Интеграция фундаментальных наук и цифровых технологий.</p>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-5">
+                        <div class="bg-white/95 backdrop-blur-xl border border-white/20 p-6 sm:p-8 rounded-3xl shadow-2xl h-full">
+                            <div class="flex justify-between items-center mb-6 sm:mb-8 border-b border-slate-100 pb-4 sm:pb-6">
+                                <span class="font-black text-slate-900 uppercase text-[10px] sm:text-xs tracking-widest italic">Расписание</span>
+                                <select id="classSelect" class="bg-slate-50 border border-slate-200 text-slate-900 text-[10px] rounded-xl px-3 sm:px-4 py-2 font-black cursor-pointer outline-none hover:border-brand-500 transition">
+                                    <option value="8А">8А</option><option value="8Б" selected>8Б</option><option value="8В">8В</option>
+                                    <option value="9А">9А</option><option value="9Б">9Б</option>
+                                    <option value="10А">10А</option><option value="10Б">10Б</option>
+                                    <option value="11А">11А</option><option value="11Б">11Б</option>
+                                </select>
+                            </div>
+                            <div id="currentStatus" class="min-h-[140px] sm:min-h-[160px]"></div>
+                            <div id="daySchedule" class="mt-4 max-h-[180px] sm:max-h-[200px] overflow-y-auto pr-2 custom-scrollbar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-12 sm:mb-16">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between border-b border-slate-100 pb-4 mb-6 sm:mb-8 gap-2">
+                    <h3 class="text-2xl sm:text-3xl font-black uppercase italic tracking-tighter">События лицея</h3>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Live Database</p>
+                </div>
+                <div id="news-container" class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+                    <div class="text-slate-400 text-sm italic font-bold">Подключение к базе данных...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-about" class="page-section">
+            <h2 class="text-4xl sm:text-5xl font-black italic mb-6 sm:mb-8 uppercase tracking-tighter">История лицея</h2>
+            <div class="grid md:grid-cols-3 gap-6 sm:gap-8">
+                
+                <div class="md:col-span-2 space-y-6 sm:space-y-8">
+                    <div class="border-card p-6 sm:p-8 text-slate-600 leading-relaxed font-medium text-sm sm:text-base">
+                        <h3 class="text-xl sm:text-2xl font-black italic uppercase mb-4 text-slate-900">«Ты помнишь, как всё начиналось...»</h3>
+                        <p class="mb-4">Первый городской общеобразовательный лицей был открыт в 1991 году по решению Исполнительного комитета Петропавловского городского Совета народных депутатов. Его основателем и первым директором стал <strong>Александр Сергеевич Слухаевский</strong>.</p>
+                        <p class="mb-4">С самого начала учебное заведение ориентировалось на саморазвитие личности. Уже в сентябре 1991 года вышел в свет первый номер лицейской газеты, а 25 мая 1993 года прозвенел самый первый «Последний звонок» для первого выпуска лицеистов.</p>
+                    </div>
+                    
+                    <div class="border-card p-6 sm:p-8 text-slate-600 leading-relaxed font-medium text-sm sm:text-base">
+                        <h3 class="text-xl sm:text-2xl font-black italic uppercase mb-4 text-slate-900">Рождение великих традиций</h3>
+                        <p class="mb-4">Именно в 90-е годы зародились главные традиции, которые бережно передаются из поколения в поколение:</p>
+                        <ul class="list-disc pl-5 space-y-2 mb-4 text-slate-700">
+                            <li><strong class="text-slate-900">19 октября — День лицейского братства.</strong> Ежегодный, самый важный праздник посвящения в лицеисты.</li>
+                            <li><strong class="text-slate-900">Турнир «Престиж».</strong> Знаменитый областной физико-математический турнир, впервые состоявшийся весной 1993 года.</li>
+                            <li><strong class="text-slate-900">Литературные кафе и театральное творчество.</strong> Пушкинские балы и литературные вечера, где лицеисты могли попробовать себя в роли актеров и поэтов Серебряного века.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="border-card p-6 sm:p-8 text-slate-600 leading-relaxed font-medium text-sm sm:text-base">
+                        <h3 class="text-xl sm:text-2xl font-black italic uppercase mb-4 text-slate-900">Дорогою добра в IT-будущее</h3>
+                        <p class="mb-4">На протяжении всех лет лицей уверенно держит марку лучшего учебного заведения региона. В 2011 году мы отпраздновали 20-летие, а в 2016 году — грандиозный 25-летний юбилей под девизом «25 лет дорогою добра». В нашей копилке — сотни победителей республиканских олимпиад и обладателей знака «Алтын Белгі».</p>
+                        <p>Сегодня учебное заведение гордо носит статус <strong>Первого IT-лицея</strong>, продолжая традиции, заложенные Александром Сергеевичем, и открывая новые горизонты в мире цифровых технологий.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="border-card p-6 sm:p-8 bg-brand-50 border-brand-100">
+                        <h3 class="text-lg sm:text-xl font-black italic uppercase mb-6 text-brand-900">Летопись в девизах</h3>
+                        <ul class="space-y-4 text-xs sm:text-[13px] font-medium text-brand-700 italic leading-relaxed">
+                            <li class="border-b border-brand-200 pb-3">«Ты помнишь, как всё начиналось, всё было впервые и вновь...»</li>
+                            <li class="border-b border-brand-200 pb-3">«Теперь не разорвать нам столь дружеского круга...»</li>
+                            <li class="border-b border-brand-200 pb-3">«Святому братству верен я...»</li>
+                            <li class="border-b border-brand-200 pb-3">«Мы на пороге большого открытия, "завтра" Лицея зависит от нас!»</li>
+                            <li class="border-b border-brand-200 pb-3">«В лицее нашем жизнь не обмелеет, а бьет она как в молодых ключах!»</li>
+                            <li>«Лицей, ты наш родимый дом! Здесь все дружны, здесь все - семья!»</li>
+                        </ul>
+                    </div>
+
+                    <div class="border-card p-6 bg-slate-900 text-white">
+                        <h3 class="text-lg sm:text-xl font-black italic uppercase mb-4 text-brand-400">Паспорт лицея</h3>
+                        <div class="space-y-4 text-xs sm:text-sm">
+                            <div><span class="text-slate-400 block text-[10px] uppercase font-bold">Год основания</span> <span class="font-bold">1991</span></div>
+                            <hr class="border-slate-800">
+                            <div><span class="text-slate-400 block text-[10px] uppercase font-bold">Языки обучения</span> Русский, Казахский</div>
+                            <div><span class="text-slate-400 block text-[10px] uppercase font-bold">Здание Абая, 100</span> Ввод в 1937 г.</div>
+                            <div><span class="text-slate-400 block text-[10px] uppercase font-bold">Здание Жамбыла, 196</span> Ввод в 1961 г.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="md:col-span-3 border-card p-6 sm:p-10 mt-4">
+                    <h3 class="text-2xl sm:text-3xl font-black italic uppercase mb-6 sm:mb-8 text-slate-900 border-b pb-4">Символика лицея</h3>
+                    <div class="grid md:grid-cols-3 gap-6 sm:gap-8">
+                        
+                        <div class="bg-slate-50 p-5 sm:p-6 rounded-2xl border border-slate-100 flex flex-col items-center text-center">
+                            <div class="h-24 sm:h-32 flex items-center justify-center mb-4 sm:mb-6 w-full bg-white rounded-xl shadow-sm overflow-hidden p-2">
+                                <img src="http://flyceum.ru/image/site/lic/flag_lyceum.jpg" onerror="this.src='https://via.placeholder.com/286x170/eff6ff/3b82f6?text=Флаг+Лицея'" alt="Флаг лицея" class="max-h-full object-contain">
+                            </div>
+                            <h4 class="text-lg sm:text-xl font-black text-brand-600 uppercase mb-2 sm:mb-3">Флаг лицея</h4>
+                            <p class="text-xs sm:text-sm text-slate-600 font-medium">Флаг двухцветный. Голубой цвет как часть государственного флага, фиолетовый цвет как символ мирового интеллекта. Звезды как символ дерзаний, озаренья, мечты.</p>
+                        </div>
+
+                        <div class="bg-slate-50 p-5 sm:p-6 rounded-2xl border border-slate-100 flex flex-col items-center text-center">
+                            <div class="h-24 sm:h-32 flex items-center justify-center mb-4 sm:mb-6 w-full bg-white rounded-xl shadow-sm overflow-hidden p-2">
+                                <img src="http://flyceum.ru/image/site/lic/gerb_lyceum.jpg" onerror="this.src='https://via.placeholder.com/101x160/eff6ff/3b82f6?text=Эмблема'" alt="Эмблема лицея" class="max-h-full object-contain">
+                            </div>
+                            <h4 class="text-lg sm:text-xl font-black text-brand-600 uppercase mb-2 sm:mb-3">Эмблема лицея</h4>
+                            <p class="text-xs sm:text-sm text-slate-600 font-medium">Спираль как символ бесконечного развития, мудрости, познания, вечности.</p>
+                        </div>
+
+                        <div class="bg-slate-50 p-5 sm:p-6 rounded-2xl border border-slate-100 flex flex-col items-center text-center relative overflow-hidden">
+                            <h4 class="text-lg sm:text-xl font-black text-brand-600 uppercase mb-2">Гимн Первого лицея</h4>
+                            <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-4 sm:mb-6">Музыка: Т. Лесных<br>Слова: А. Курлени</p>
+                            
+                            <div class="text-xs sm:text-sm text-slate-700 font-medium italic space-y-4 max-h-48 sm:max-h-56 overflow-y-auto custom-scrollbar pr-3 text-left w-full">
+                                <p>Дом дружбы, обитель крылатой мечты,<br>Храм мудрости, чести и знаний,<br>Для нас стал навеки святынею ты,<br>Лицей - символ наших дерзаний.</p>
+                                
+                                <p class="font-bold text-brand-900 border-l-2 sm:border-l-4 border-brand-500 pl-3 sm:pl-4 bg-brand-50 p-2 sm:p-3 rounded-r-lg">Живи, процветая, любимый лицей.<br>У нас с тобой общая светлая цель:<br>Достойно нести через годы<br>Свет знаний, добра и свободы!</p>
+                                
+                                <p>Лицейское братство - традиций оплот,<br>Живительный дух поколений.<br>Мы к звездным высотам свершаем полет<br>Под флагом единства стремлений.</p>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        <div id="page-passport" class="page-section">
+            <h2 class="text-4xl sm:text-5xl font-black italic mb-6 sm:mb-8 uppercase tracking-tighter">Паспорт лицея</h2>
+            <div class="grid md:grid-cols-3 gap-6 sm:gap-8">
+                <div class="md:col-span-2 space-y-6">
+                    <div class="border-card p-6 sm:p-8 h-full text-slate-600 leading-relaxed font-medium text-sm sm:text-base">
+                        <p class="mb-4">"Первый городской общеобразовательный лицей" открыт в 1991 году как одно из первых инновационных учреждений образования Республики Казахстан. Его основатель и первый директор Александр Сергеевич Слухаевский. Главная задача лицея - ориентация на самоопределение и саморазвитие личности каждого из участников педагогического процесса на основе непрерывности и приоритетности образования, здорового образа жизни.</p>
+                        <p class="mb-4">В течение первого учебного года открыты профильные классы естественно-математического и гуманитарного направления для учащихся 8-10 классов, лаборатория для исследовательских работ по физике, компьютерный класс для проведения уроков математики и русского языка, введена должность освобожденного классного руководителя - куратора. В 1997 году в лицее прошел первый набор в 1-7 классы.</p>
+                        <p class="font-bold text-slate-900 border-l-4 border-brand-500 pl-4 py-2 bg-slate-50 rounded-r-xl">Внешней оценкой деятельности педагогического коллектива стало признание лицея лучшей организацией среднего образования СКО 2014 года с вручением Гранта на 16 млн.тенге.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="border-card p-6 bg-slate-900 text-white">
+                        <h3 class="text-xl font-black italic uppercase mb-4 text-brand-400">Администрация</h3>
+                        <div class="space-y-4 text-xs sm:text-sm">
+                            <div><span class="text-slate-400 block text-[10px] uppercase font-bold">Директор</span> <span class="font-bold">Новикова Оксана Николаевна</span></div>
+                            <hr class="border-slate-800">
+                            <div><span class="text-slate-400 block text-[10px] uppercase font-bold">Зам. по учебной работе</span> Мирошина Т.Р., Борщ А.Г.</div>
+                            <div><span class="text-slate-400 block text-[10px] uppercase font-bold">Зам. по гос.языку</span> Абилов М.Б.</div>
+                            <div><span class="text-slate-400 block text-[10px] uppercase font-bold">Зам. по воспитательной работе</span> Кононова Н.Л., Шкабура О.Н.</div>
+                            <div><span class="text-slate-400 block text-[10px] uppercase font-bold">Зам. по начальным классам</span> Кроленко И.Г.</div>
+                            <div><span class="text-slate-400 block text-[10px] uppercase font-bold">Зам. по научной работе</span> Жукова Н.В.</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="md:col-span-3 border-card p-6 sm:p-8">
+                    <h3 class="text-2xl font-black italic uppercase mb-6 border-b pb-4">Материально-техническая база</h3>
+                    <ul class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 text-xs sm:text-sm font-medium text-slate-600">
+                        <li class="bg-slate-50 p-4 rounded-xl"><strong class="text-slate-900 block text-sm sm:text-base mb-1">Здания (Типовые)</strong> Корпус Абая, 100 (1937 г.)<br>Корпус Жамбыла, 196 (1961 г.)</li>
+                        <li class="bg-slate-50 p-4 rounded-xl"><strong class="text-slate-900 block text-sm sm:text-base mb-1">Проектная мощность</strong> 232 (Абая) / 521 (Жамбыла)</li>
+                        <li class="bg-slate-50 p-4 rounded-xl"><strong class="text-slate-900 block text-sm sm:text-base mb-1">Язык обучения</strong> Русский, Казахский</li>
+                        <li class="bg-slate-50 p-4 rounded-xl"><strong class="text-slate-900 block text-sm sm:text-base mb-1">Кабинеты (всего 49)</strong> Интерактивные - 17, Мультимедийные - 2</li>
+                        <li class="bg-slate-50 p-4 rounded-xl"><strong class="text-slate-900 block text-sm sm:text-base mb-1">Обеспечение</strong> Спортзал, Мастерская, Столовая, Мед. кабинет</li>
+                        <li class="bg-slate-50 p-4 rounded-xl"><strong class="text-slate-900 block text-sm sm:text-base mb-1">Питание и УМК</strong> 100% обеспеченность, горячее питание 1-11 кл.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-documents" class="page-section">
+            <h2 class="text-4xl sm:text-5xl font-black italic mb-6 sm:mb-8 uppercase tracking-tighter">Официальные документы</h2>
+            <div class="grid sm:grid-cols-2 gap-6 sm:gap-8 mb-8 sm:mb-12">
+                <a href="http://flyceum.ru/document/ustav2020ru.pdf" target="_blank" class="border-card p-6 sm:p-8 hover:border-brand-500 hover:shadow-lg transition block">
+                    <h3 class="text-xl sm:text-2xl font-black uppercase mb-2">Устав лицея</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 font-medium">КГУ «Первый городской общеобразовательный IT-лицей» является некоммерческой организацией...</p>
+                    <span class="inline-block mt-4 text-[10px] font-black text-brand-600 uppercase tracking-widest bg-brand-50 px-3 py-1 rounded-lg">Читать (PDF)</span>
+                </a>
+                <a href="http://flyceum.ru/document/col_dog_l.pdf" target="_blank" class="border-card p-6 sm:p-8 hover:border-brand-500 hover:shadow-lg transition block">
+                    <h3 class="text-xl sm:text-2xl font-black uppercase mb-2">Коллективный договор</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 font-medium">Договор заключён между работодателем в лице директора Новиковой О.Н. и коллективом.</p>
+                    <span class="inline-block mt-4 text-[10px] font-black text-brand-600 uppercase tracking-widest bg-brand-50 px-3 py-1 rounded-lg">Читать (PDF)</span>
+                </a>
+                <a href="http://flyceum.ru/document/prav_ras.pdf" target="_blank" class="border-card p-6 sm:p-8 hover:border-brand-500 hover:shadow-lg transition block">
+                    <h3 class="text-xl sm:text-2xl font-black uppercase mb-2">Правила распорядка</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 font-medium">Разработаны на основе Закона РК «Об образовании», Трудового кодекса РК и Устава.</p>
+                    <span class="inline-block mt-4 text-[10px] font-black text-brand-600 uppercase tracking-widest bg-brand-50 px-3 py-1 rounded-lg">Читать (PDF)</span>
+                </a>
+                <a href="http://flyceum.ru/document/prav_pov.pdf" target="_blank" class="border-card p-6 sm:p-8 hover:border-brand-500 hover:shadow-lg transition block">
+                    <h3 class="text-xl sm:text-2xl font-black uppercase mb-2">Правила поведения</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 font-medium">Разработаны в соответствии с Уставом лицея и Декларации о защите чести.</p>
+                    <span class="inline-block mt-4 text-[10px] font-black text-brand-600 uppercase tracking-widest bg-brand-50 px-3 py-1 rounded-lg">Читать (PDF)</span>
+                </a>
+            </div>
+
+            <h3 class="text-2xl sm:text-3xl font-black italic mb-4 sm:mb-6 uppercase tracking-tighter">Лицензии</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
+                <a href="http://flyceum.ru/image/site/lic/l1.pdf" target="_blank" class="block border rounded-2xl overflow-hidden hover:shadow-lg transition"><img src="http://flyceum.ru/image/site/lic/l1s.jpg" class="w-full object-cover"></a>
+                <a href="http://flyceum.ru/image/site/lic/l2.pdf" target="_blank" class="block border rounded-2xl overflow-hidden hover:shadow-lg transition"><img src="http://flyceum.ru/image/site/lic/l2s.jpg" class="w-full object-cover"></a>
+                <a href="http://flyceum.ru/image/site/lic/l3.pdf" target="_blank" class="block border rounded-2xl overflow-hidden hover:shadow-lg transition"><img src="http://flyceum.ru/image/site/lic/l3s.jpg" class="w-full object-cover"></a>
+                <a href="http://flyceum.ru/image/site/lic/l4.pdf" target="_blank" class="block border rounded-2xl overflow-hidden hover:shadow-lg transition"><img src="http://flyceum.ru/image/site/lic/l4s.jpg" class="w-full object-cover"></a>
+                <a href="http://flyceum.ru/image/site/lic/l5.jpg" target="_blank" class="block border rounded-2xl overflow-hidden hover:shadow-lg transition"><img src="http://flyceum.ru/image/site/lic/l5s.jpg" class="w-full object-cover"></a>
+            </div>
+        </div>
+
+        <div id="page-parents" class="page-section">
+            <h2 class="text-4xl sm:text-5xl font-black italic mb-6 sm:mb-8 uppercase tracking-tighter">Родителям</h2>
+            
+            <div class="grid lg:grid-cols-2 gap-6 sm:gap-8 mb-8">
+                <div class="border-card p-6 sm:p-8">
+                    <h3 class="text-xl sm:text-2xl font-black italic uppercase mb-4 sm:mb-6 text-brand-600 border-b pb-4">Условия приема в лицей</h3>
+                    <div class="text-xs sm:text-sm font-medium text-slate-600 space-y-4">
+                        <p><strong class="text-slate-900">Порядок приема:</strong> В первые классы принимаются дети, достигшие к 1 сентября текущего года 6-7 лет, в классы предшкольной подготовки – 5-6 лет.</p>
+                        <p><strong class="text-slate-900">Необходимые документы:</strong></p>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>Заявление от родителей (законных представителей)</li>
+                            <li>Копия свидетельства о рождении ребенка и ИИН</li>
+                            <li>Справка с места жительства о составе семьи</li>
+                            <li>Справка с работы родителей</li>
+                            <li>Фотография 3х4 (2 шт.)</li>
+                            <li>Медицинская справка формы Ф63 и Ф26</li>
+                        </ul>
+                        <p class="mt-4 bg-brand-50 p-3 sm:p-4 rounded-xl border border-brand-100 text-brand-900">Прием учащихся в 2-11 классы производится на конкурсной основе (тестирование по русскому, математике и английскому языку).</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6 sm:space-y-8">
+                    <div class="border-card p-6 sm:p-8 border-l-4 border-l-blue-500">
+                        <h3 class="text-lg sm:text-xl font-black italic uppercase mb-3 sm:mb-4 text-slate-900">Правила отмены занятий зимой</h3>
+                        <p class="text-xs sm:text-sm text-slate-600 mb-3 sm:mb-4">Отмена занятий при ветре со скоростью 2 м/с и более:</p>
+                        <ul class="space-y-2 text-xs sm:text-sm font-bold text-slate-700">
+                            <li class="flex justify-between bg-slate-50 p-2 rounded"><span>1-4 классы</span> <span class="text-blue-600">-25°С и ниже</span></li>
+                            <li class="flex justify-between bg-slate-50 p-2 rounded"><span>1-9 классы</span> <span class="text-blue-600">-27°С и ниже</span></li>
+                            <li class="flex justify-between bg-slate-50 p-2 rounded"><span>1-11 классы</span> <span class="text-blue-600">-30°С и ниже</span></li>
+                        </ul>
+                        <p class="text-[10px] sm:text-xs text-red-500 font-bold mt-4 italic">* При скорости ветра менее 2 м/с температурный порог увеличивается на -5°С.</p>
+                    </div>
+
+                    <div class="border-card p-6 sm:p-8">
+                        <h3 class="text-lg sm:text-xl font-black italic uppercase mb-3 sm:mb-4 text-slate-900">Государственные услуги (eGov)</h3>
+                        <p class="text-xs sm:text-sm text-slate-600">Для полноценного получения услуг (например, запись к врачу через DamuMed или справки) необходимо иметь <strong>ЭЦП</strong>. Также доступна мобильная версия правительства с доступом по одноразовому SMS-паролю.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-2xl sm:text-3xl font-black italic mb-4 sm:mb-6 uppercase tracking-tighter mt-8 sm:mt-12">Безопасность и памятки</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+                <a href="http://flyceum.ru/document/warrning_ice.pdf" target="_blank" class="border-card p-3 sm:p-4 text-center hover:border-red-500 transition group flex flex-col justify-center items-center h-full">
+                    <span class="text-red-500 font-black text-xl sm:text-2xl mb-1 sm:mb-2 group-hover:scale-110 transition">❄️</span>
+                    <span class="text-[10px] sm:text-xs font-bold uppercase">Осторожно, тонкий лёд!</span>
+                </a>
+                <a href="http://flyceum.ru/document/covid.pdf" target="_blank" class="border-card p-3 sm:p-4 text-center hover:border-brand-500 transition group flex flex-col justify-center items-center h-full">
+                    <span class="text-brand-500 font-black text-xl sm:text-2xl mb-1 sm:mb-2 group-hover:scale-110 transition">🦠</span>
+                    <span class="text-[10px] sm:text-xs font-bold uppercase">COVID-19: Что нужно знать</span>
+                </a>
+                <a href="http://flyceum.ru/document/mite.pdf" target="_blank" class="border-card p-3 sm:p-4 text-center hover:border-green-500 transition group flex flex-col justify-center items-center h-full">
+                    <span class="text-green-600 font-black text-xl sm:text-2xl mb-1 sm:mb-2 group-hover:scale-110 transition">🌿</span>
+                    <span class="text-[10px] sm:text-xs font-bold uppercase">Сезон клещей: Защита</span>
+                </a>
+                <a href="http://flyceum.ru/document/dogs.jpg" target="_blank" class="border-card p-3 sm:p-4 text-center hover:border-orange-500 transition group flex flex-col justify-center items-center h-full">
+                    <span class="text-orange-500 font-black text-xl sm:text-2xl mb-1 sm:mb-2 group-hover:scale-110 transition">🐕</span>
+                    <span class="text-[10px] sm:text-xs font-bold uppercase">Бродячие собаки</span>
+                </a>
+                <a href="http://flyceum.ru/document/not_stranger.pdf" target="_blank" class="border-card p-3 sm:p-4 text-center hover:border-purple-500 transition group flex flex-col justify-center items-center h-full">
+                    <span class="text-purple-500 font-black text-xl sm:text-2xl mb-1 sm:mb-2 group-hover:scale-110 transition">🛡️</span>
+                    <span class="text-[10px] sm:text-xs font-bold uppercase">Общение с незнакомцами</span>
+                </a>
+                <a href="http://flyceum.ru/document/reminder.pdf" target="_blank" class="border-card p-3 sm:p-4 text-center hover:border-red-500 transition group flex flex-col justify-center items-center h-full">
+                    <span class="text-red-500 font-black text-xl sm:text-2xl mb-1 sm:mb-2 group-hover:scale-110 transition">🪟</span>
+                    <span class="text-[10px] sm:text-xs font-bold uppercase">Защита от падения из окна</span>
+                </a>
+                <a href="http://flyceum.ru/document/elektro.pdf" target="_blank" class="border-card p-3 sm:p-4 text-center hover:border-yellow-500 transition group flex flex-col justify-center items-center h-full">
+                    <span class="text-yellow-500 font-black text-xl sm:text-2xl mb-1 sm:mb-2 group-hover:scale-110 transition">⚡</span>
+                    <span class="text-[10px] sm:text-xs font-bold uppercase">Электробезопасность</span>
+                </a>
+                <a href="http://flyceum.ru/document/gripp.pdf" target="_blank" class="border-card p-3 sm:p-4 text-center hover:border-blue-500 transition group flex flex-col justify-center items-center h-full">
+                    <span class="text-blue-500 font-black text-xl sm:text-2xl mb-1 sm:mb-2 group-hover:scale-110 transition">🤧</span>
+                    <span class="text-[10px] sm:text-xs font-bold uppercase">Грипп и Коклюш</span>
+                </a>
+            </div>
+        </div>
+
+        <div id="page-pride" class="page-section">
+            <h2 class="text-4xl sm:text-5xl font-black italic mb-6 sm:mb-8 uppercase tracking-tighter">Наша гордость</h2>
+            
+         
+
+            <div class="border-card p-6 sm:p-8 min-h-[300px]">
+                <div id="nom-1" class="pride-content active">
+                    <p class="text-slate-500 font-medium mb-6 sm:mb-8 max-w-3xl text-sm sm:text-base">Выпускники лицея живут и трудятся в разных городах ближнего и дальнего зарубежья. У каждого из них своя судьба, но все они хранят в уголке души память о лицейском братстве, не забывают родной лицей, а мы помним их и гордимся ими.</p>
+                    
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                        <script>
+                            const alumni = [
+                                {n: "Александр Ушаков", y: "1995", d: "Занимается математической наукой в Америке, стал доктором наук."},
+                                {n: "Василий Черепанов", y: "1994", d: "Живет и работает в Германии. Занимается физикой, автор проектов по созданию искусственных алмазов."},
+                                {n: "Сергей Крих", y: "1995", d: "Поэт, прозаик, член Союза писателей России. Кандидат исторических наук, преподаватель ОМГУ."},
+                                {n: "Инна Живетьева", y: "1994", d: "Писатель, автор романов-фэнтези. Системный аналитик в крупной компании (Новосибирск)."},
+                                {n: "Данияр Байтенизов", y: "2003", d: "Вошел в десятку лучших выпускников РК по итогам ЕНТ. Главный специалист городского акимата г. Петропавловск."},
+                                {n: "Николай Литвиненко", y: "1994", d: "Инвестиционный банкир в Goldman Sachs (Лондон). Окончил МГУ и Wharton School (США)."},
+                                {n: "Ольга Райш", y: "1993", d: "Первый выпуск лицея. Окончила Франкфуртский Университет по специальности фармацевт (Германия)."},
+                                {n: "Жан Иссин", y: "1995", d: "Директор департамента экономики и финансов Министерства туризма и спорта (Астана)."},
+                                {n: "Олжас Изгутдин", y: "1994", d: "Председатель Правления АО АТФ-финанс. Специалист мирового фондового рынка."},
+                                {n: "Артем Киселев", y: "1995", d: "Зам. руководителя службы недвижимости холдинга 'Инком-Авто'."},
+                                {n: "Ирина Кукарская", y: "1995", d: "Кандидат философских наук, доцент Института менеджмента ОМГУПС."},
+                                {n: "Виталий Билевич", y: "1993", d: "Директор департамента по ИТ (г. Екатеринбург)."},
+                                {n: "Аскер Мухамеджанов", y: "2001", d: "Юридическое управление АО 'Астана-Финанс'."},
+                                {n: "Ярослав Лопухин", y: "1994", d: "Старший преподаватель факультета Международного управления ТГУ (Томск)."},
+                                {n: "Жанна Потемкина", y: "1993", d: "Начальник отдела маркетинга в компании 'Гамма-Центр' (Москва)."},
+                                {n: "Александр Целых", y: "1998", d: "Директор ООО 'Агентство юридической безопасности' (Челябинск)."},
+                                {n: "Денис Иванов-Меркель", y: "1995", d: "Первый 'Лицеист года'. Работает в немецко-американской фирме (Нюрнберг)."},
+                                {n: "Сергей Богушевич", y: "1997", d: "Начальник дорожной лаборатории связи Южно-Уральской железной дороги."}
+                            ];
+                            document.write(alumni.map(a => `
+                                <div class="bg-slate-50 border border-slate-100 p-4 sm:p-5 rounded-2xl hover:border-brand-300 transition">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h4 class="font-black text-brand-900 text-base sm:text-lg leading-tight">${a.n}</h4>
+                                        <span class="bg-brand-100 text-brand-700 text-[9px] sm:text-[10px] font-black px-2 py-1 rounded uppercase shrink-0 ml-2">${a.y}</span>
+                                    </div>
+                                    <p class="text-xs sm:text-sm text-slate-600 font-medium">${a.d}</p>
+                                </div>
+                            `).join(''));
+                        </script>
+                    </div>
+                </div>
+
+                <div id="nom-2" class="pride-content">
+                    <h3 class="text-xl sm:text-2xl font-black italic uppercase mb-6 text-brand-600 border-b pb-4">Обладатели знака «Алтын Белгі»</h3>
+                    <div class="text-slate-500 italic text-sm">Списки формируются...</div>
+                </div>
+            </div>
+            <script>
+                function switchPrideTab(tabId) {
+                    document.querySelectorAll('.pride-tab').forEach(btn => btn.classList.remove('active'));
+                    document.querySelectorAll('.pride-content').forEach(content => content.classList.remove('active'));
+                    event.currentTarget.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                }
+            </script>
+        </div>
+
+        <div id="page-sports" class="page-section">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between border-b border-slate-200 pb-4 sm:pb-6 mb-6 sm:mb-8">
+                <div>
+                    <h2 class="text-4xl sm:text-5xl font-black italic uppercase tracking-tighter">Спортивные достижения</h2>
+                    <p class="text-sm sm:text-base text-slate-500 font-medium mt-2 max-w-3xl">В 1997 году был учрежден переходящий кубок "Лучший спортивный класс". Кубок вручается 19 октября на празднике "День лицея".</p>
+                </div>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                <script>
+                    const sportsData = [
+                        {y:1997, c:"11 В", k:"Н.А. Осипова"}, {y:1998, c:"11 В", k:"Т.М. Дементьева"}, {y:1999, c:"10 Б", k:"Л.Э. Сергеева"},
+                        {y:2000, c:"11 Б", k:"Л.Э. Сергеева"}, {y:2001, c:"10 В", k:"Т.Л. Овсянникова"}, {y:2002, c:"11 В", k:"Т.Л. Овсянникова"},
+                        {y:2003, c:"10 В", k:"Л.Э. Сергеева"}, {y:2004, c:"11 Б", k:"И.А. Атангулова"}, {y:2005, c:"11 Б", k:"Т.Л. Овсянникова"},
+                        {y:2006, c:"10 Б", k:"Л.Э. Сергеева"}, {y:2007, c:"11 Б", k:"Л.Э. Сергеева"}, {y:2008, c:"9 Г", k:"А.А. Арсланова"},
+                        {y:2009, c:"10 Б", k:"Т.Л. Овсянникова"}, {y:2010, c:"11 Б", k:"Т.Л. Овсянникова"}, {y:2011, c:"10 А", k:"Н.М. Руденко"},
+                        {y:2012, c:"11 А", k:"Н.М. Руденко"}, {y:2013, c:"11 А", k:"Т.Л. Овсянникова"}, {y:2014, c:"11 А", k:"Т.Р. Мирошина"},
+                        {y:2015, c:"11 А", k:"Л.Э. Сергеева"}, {y:2016, c:"11 Б", k:"Т.Л. Овсянникова"}, {y:2017, c:"11 Б", k:"Т.Л. Овсянникова"},
+                        {y:2018, c:"11 Б", k:"Т.В. Бобровская"}, {y:2019, c:"11 Б", k:"Т.В. Бобровская"}, {y:2020, c:"8 Б", k:"Н.Ю. Беленкова"},
+                        {y:2021, c:"11 А", k:"О.А. Адушева"}, {y:2022, c:"11 Б", k:"Н.Ю. Беленкова"}
+                    ];
+                    document.write(sportsData.reverse().map(item => `
+                        <div class="border-card p-4 sm:p-5 flex items-center gap-3 sm:gap-4 hover:border-brand-500 transition">
+                            <div class="bg-brand-50 text-brand-600 font-black text-lg sm:text-xl rounded-xl w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center shrink-0">${item.y}</div>
+                            <div>
+                                <h4 class="font-black uppercase italic text-base sm:text-lg">Класс ${item.c}</h4>
+                                <p class="text-[10px] sm:text-xs text-slate-500 uppercase tracking-widest font-bold">Куратор: ${item.k}</p>
+                            </div>
+                        </div>
+                    `).join(''));
+                </script>
+            </div>
+        </div>
+
+        <div id="page-fund" class="page-section">
+            <div class="border-card overflow-hidden">
+                <div class="bg-slate-900 text-white p-6 sm:p-10 md:p-16 flex flex-col md:flex-row gap-6 sm:gap-10 items-center text-center md:text-left">
+                    <img src="http://flyceum.ru/image/site/ASS.jpg" alt="А.С. Слухаевский" class="w-40 sm:w-48 h-48 sm:h-56 object-cover rounded-2xl shadow-2xl border-4 border-slate-700">
+                    <div>
+                        <h2 class="text-3xl sm:text-4xl md:text-5xl font-black italic mb-3 sm:mb-4 uppercase tracking-tighter text-brand-400">Мудрый и добрый учитель...</h2>
+                        <h3 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Слухаевский Александр Сергеевич</h3>
+                        <p class="text-sm sm:text-base text-slate-300 font-medium leading-relaxed">В 1991 году Александр Сергеевич создал первое в республике учебное заведение нового типа - Первый городской общеобразовательный лицей. Он создавал лицей с нуля, вынашивал идею, подготовил пакет документов и удачно провел свое детище через все преграды. С 1971 года он работал с одаренными детьми, и его воспитанники ежегодно становились призерами олимпиад по физике.</p>
+                        <p class="text-xs sm:text-sm text-slate-400 mt-4 italic">Награжден медалями «Шапагат», «10 лет Независимости РК», знаком «Ыбрая Алтынсарина», «Отличник просвещения Казахстана».</p>
+                    </div>
+                </div>
+                
+                <div class="p-6 sm:p-10 md:p-16 bg-white">
+                    <h3 class="text-2xl sm:text-3xl font-black italic uppercase mb-8 sm:mb-10 tracking-tighter border-b pb-4 text-center md:text-left">Коллеги об Александре Сергеевиче</h3>
+                    <div class="grid md:grid-cols-2 gap-6 sm:gap-8">
+                        <blockquote class="bg-slate-50 p-5 sm:p-6 rounded-2xl border border-slate-100 relative">
+                            <span class="absolute top-2 sm:top-4 right-4 text-5xl sm:text-6xl text-slate-200 font-serif leading-none">"</span>
+                            <p class="text-sm sm:text-base text-slate-600 italic font-medium mb-4 relative z-10">Секрет его успеха был простым и сложным одновременно. Он щедро делился своими знаниями, работал по принципу "Делай как я", собственным примером учил своих воспитанников - будь успешным, не прячь свой талант, работай и тогда добьешься всего.</p>
+                            <footer class="font-black text-brand-900 uppercase text-[10px] tracking-widest">— В.Г. Коноплев</footer>
+                        </blockquote>
+                        <blockquote class="bg-slate-50 p-5 sm:p-6 rounded-2xl border border-slate-100 relative">
+                            <span class="absolute top-2 sm:top-4 right-4 text-5xl sm:text-6xl text-slate-200 font-serif leading-none">"</span>
+                            <p class="text-sm sm:text-base text-slate-600 italic font-medium mb-4 relative z-10">Человек интенсивной мысли и жизни. Генератор новых идей. Директор, позволяющий своим учителям размышлять, доказывать. Человек, Учитель, Директор, которого не хочется подводить, которому хочется соответствовать.</p>
+                            <footer class="font-black text-brand-900 uppercase text-[10px] tracking-widest">— Л.Н. Батырева</footer>
+                        </blockquote>
+                        <blockquote class="bg-slate-50 p-5 sm:p-6 rounded-2xl border border-slate-100 relative md:col-span-2">
+                            <span class="absolute top-2 sm:top-4 right-4 text-5xl sm:text-6xl text-slate-200 font-serif leading-none">"</span>
+                            <p class="text-sm sm:text-base text-slate-600 italic font-medium mb-4 relative z-10">Меня покоряло удивительное сочетание силы воли и ранимости, строгости и душевной чуткости... Никакие методы и супертехника не смогут зажечь сердца учеников. Есть только один способ - личный пример учителя. Живя по такому принципу, Александр Сергеевич собрал вокруг себя много талантливых единомышленников.</p>
+                            <footer class="font-black text-brand-900 uppercase text-[10px] tracking-widest">— Г.М. Нургужина</footer>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 pt-12 sm:pt-16 pb-8 sm:pb-12 px-6 mt-auto">
+        <div class="max-w-[1500px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 mb-8">
+            <div class="space-y-4 sm:space-y-6">
+                <h3 class="text-lg sm:text-xl font-black text-slate-900 uppercase">ПЕРВЫЙ IT-ЛИЦЕЙ</h3>
+                <p class="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed">Первый городской общеобразовательный IT-лицей. Инновационное пространство для развития талантов.</p>
+                
+                <div class="pt-2">
+                    <p class="text-slate-400 mb-2 text-[10px] uppercase font-black tracking-widest">Каналы лицейского братства</p>
+                    <div class="flex gap-3">
+                        <a href="https://vk.com/flyceumbrotherhood" target="_blank" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-500 font-bold hover:bg-brand-500 hover:text-white transition">VK</a>
+                        <a href="https://t.me/flyceumbrotherhood" target="_blank" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-500 font-bold hover:bg-brand-500 hover:text-white transition">TG</a>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="font-black text-slate-900 text-sm sm:text-base mb-4 sm:mb-6">Документация</h4>
+                <ul class="space-y-3 sm:space-y-4 text-xs sm:text-sm text-slate-500 font-medium">
+                    <li><a href="#" onclick="window.showPage('passport'); return false;" class="hover:text-brand-600 transition">Паспорт лицея</a></li>
+                    <li><a href="#" onclick="window.showPage('documents'); return false;" class="hover:text-brand-600 transition">Официальные документы</a></li>
+                    <li><a href="http://flyceum.ru/document/allform2022.pdf" target="_blank" class="hover:text-brand-600 transition">Положение о школьной форме</a></li>
+                    <li><a href="http://flyceum.ru/files/default.php?lg=0" target="_blank" class="hover:text-brand-600 transition">Государственные закупки</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="font-black text-slate-900 text-sm sm:text-base mb-4 sm:mb-6">Жизнь лицея</h4>
+                <ul class="space-y-3 sm:space-y-4 text-xs sm:text-sm text-slate-500 font-medium">
+                    <li><a href="#" onclick="window.showPage('parents'); return false;" class="hover:text-brand-600 transition">Родителям</a></li>
+                    <li><a href="#" onclick="window.showPage('pride'); return false;" class="hover:text-brand-600 transition">Наша гордость</a></li>
+                    <li><a href="#" onclick="window.showPage('sports'); return false;" class="hover:text-brand-600 transition">Спортивные достижения</a></li>
+                    <li><a href="#" onclick="window.showPage('fund'); return false;" class="hover:text-brand-600 transition">Фонд им. А.С. Слухаевского</a></li>
+                    <li class="pt-2"><a href="admin.html" target="_blank" class="text-brand-600 font-bold hover:text-brand-800 transition">Панель управления (Admin)</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="font-black text-slate-900 text-sm sm:text-base mb-4 sm:mb-6">Телефоны доверия</h4>
+                <div class="space-y-4 sm:space-y-5 text-xs sm:text-sm">
+                    <div>
+                        <p class="text-slate-400 mb-1">Защита прав детей (СКО):</p>
+                        <a href="tel:+77152460654" class="font-bold text-slate-900 hover:text-brand-600 transition">+7 (7152) 46-06-54</a>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 mb-1">Экстренная психологическая помощь:</p>
+                        <a href="tel:88000808150" class="font-bold text-slate-900 hover:text-brand-600 transition">8-800-080-8150</a>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 mb-1">Call-center Уполномоченного по правам ребенка:</p>
+                        <a href="tel:111" class="font-black text-brand-600 text-lg sm:text-xl hover:text-brand-800 transition">111</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="news-modal" class="fixed inset-0 z-[100] bg-white flex-col lg:flex-row overflow-hidden">
+        <button onclick="window.closeNews()" class="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-slate-100 text-slate-900 flex items-center justify-center font-black text-xl sm:text-2xl hover:bg-red-500 hover:text-white transition z-50">✕</button>
+        <div class="lg:w-1/2 h-48 sm:h-64 lg:h-full bg-slate-100 relative shrink-0">
+            <img id="modal-img" src="" alt="Фото новости" class="w-full h-full object-cover">
+        </div>
+        <div class="lg:w-1/2 p-5 sm:p-8 lg:p-16 h-full overflow-y-auto custom-scrollbar relative bg-white">
+            <div class="max-w-2xl mx-auto lg:mx-0 pt-4 lg:pt-0">
+                <p id="modal-date" class="text-[10px] sm:text-[11px] font-black text-brand-600 uppercase tracking-[0.3em] mb-3 sm:mb-4">Date</p>
+                <h2 id="modal-title" class="text-2xl sm:text-4xl lg:text-6xl font-black tracking-tighter leading-tight lg:leading-none mb-6 sm:mb-10 italic">Title</h2>
+                <div id="modal-body" class="text-slate-600 font-medium leading-relaxed space-y-4 sm:space-y-6 text-sm sm:text-base lg:text-lg"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+    
+    <script>
+        // Дождь
+        let rainInterval = null;
+
+        window.startRain = function() {
+            const cvs = document.getElementById('rain-canvas');
+            cvs.classList.remove('opacity-0');
+            cvs.classList.add('opacity-100');
+            
+            if (rainInterval) return;
+            
+            const ctx = cvs.getContext('2d');
+            let w = cvs.width = window.innerWidth;
+            let h = cvs.height = window.innerHeight;
+            
+            window.addEventListener('resize', () => {
+                w = cvs.width = window.innerWidth;
+                h = cvs.height = window.innerHeight;
+            });
+
+            let drops = [];
+            const dropsCount = window.innerWidth < 768 ? 70 : 150; 
+            for(let i = 0; i < dropsCount; i++) {
+                drops.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    len: Math.random() * 20 + 10,
+                    ys: Math.random() * 10 + 15,
+                    xs: Math.random() * 2 - 1
+                });
+            }
+            
+            rainInterval = setInterval(() => {
+                ctx.clearRect(0, 0, w, h);
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.3)';
+                ctx.lineWidth = 1.5;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                for(let i = 0; i < drops.length; i++) {
+                    let d = drops[i];
+                    ctx.moveTo(d.x, d.y);
+                    ctx.lineTo(d.x + d.xs, d.y + d.len);
+                    d.y += d.ys;
+                    d.x += d.xs;
+                    if(d.y > h) {
+                        d.y = -20;
+                        d.x = Math.random() * w;
+                    }
+                }
+                ctx.stroke();
+            }, 30);
+        }
+
+        window.stopRain = function() {
+            const cvs = document.getElementById('rain-canvas');
+            cvs.classList.remove('opacity-100');
+            cvs.classList.add('opacity-0');
+            
+            setTimeout(() => {
+                if (cvs.classList.contains('opacity-0') && rainInterval) {
+                    clearInterval(rainInterval);
+                    rainInterval = null;
+                }
+            }, 1000);
+        }
+
+        // Обновленная функция навигации, которая понимает и мобильные, и десктопные кнопки
+        window.showPage = function(id) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active-page'));
+            const target = document.getElementById('page-' + id);
+            if (target) target.classList.add('active-page');
+            
+            // Сбрасываем стили у ВСЕХ кнопок
+            document.querySelectorAll('.top-nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.mobile-nav-btn').forEach(btn => btn.classList.remove('active'));
+
+            // Добавляем стиль активной кнопки для выбранной страницы (и десктоп, и мобилка)
+            document.querySelectorAll(`.top-nav-btn[onclick*="'${id}'"]`).forEach(btn => btn.classList.add('active'));
+            document.querySelectorAll(`.mobile-nav-btn[onclick*="'${id}'"]`).forEach(btn => btn.classList.add('active'));
+
+            if (id === 'fund') {
+                document.body.classList.add('dark-theme');
+                window.startRain();
+            } else {
+                document.body.classList.remove('dark-theme');
+                window.stopRain();
+            }
+        };
+    </script>
+</body>
+</html>
