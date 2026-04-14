@@ -32,21 +32,18 @@ function listenToScheduleSettings() {
     });
 }
 
-// --- ЛОКАЛЬНАЯ ЗАГРУЗКА РАСПИСАНИЯ ---
-async function loadSchedule() {
-// --- ЛОКАЛЬНАЯ ЗАГРУЗКА РАСПИСАНИЯ ---
+// --- ЗАГРУЗКА РАСПИСАНИЯ (С GITHUB) ---
 async function loadSchedule() {
     try {
-        // ВСТАВЬ СЮДА СВОЮ ССЫЛКУ RAW ИЗ GITHUB
+        // Ссылка RAW ИЗ GITHUB
         const scheduleUrl = 'https://raw.githubusercontent.com/asecretmanthatyoudontneedtoknow/flyceum-hackaton/refs/heads/main/schedule.json'; 
         
-        // Добавляем параметр cache: 'no-store', чтобы браузер всегда качал свежую версию, а не брал старую из памяти
+        // Добавляем параметр cache: 'no-store', чтобы браузер всегда качал свежую версию
         const response = await fetch(scheduleUrl, { cache: 'no-store' }); 
         
         if (!response.ok) throw new Error("Файл не найден");
         const rawData = await response.json();
         
-        // ... (остальной код функции без изменений)
         let classesData = {};
 
         rawData.forEach(item => {
@@ -64,7 +61,7 @@ async function loadSchedule() {
         state.schedule = classesData;
         updateClassWidget();
     } catch (e) {
-        document.getElementById('currentStatus').innerHTML = '<div class="py-10 text-center text-red-500 font-bold">Файл schedule.json не найден!</div>';
+        document.getElementById('currentStatus').innerHTML = '<div class="py-10 text-center text-red-500 font-bold">Ошибка загрузки расписания!</div>';
     }
 }
 
@@ -231,7 +228,7 @@ window.closeNews = function() {
 };
 
 // --- ВИРТУАЛЬНАЯ ПРИЕМНАЯ И КАПТЧА ---
-const GEMINI_API_KEY = '';
+const GEMINI_API_KEY = import.meta.env ? import.meta.env.VITE_GEMINI_API_KEY : '';
 
 function generateCaptcha() {
     const num1 = Math.floor(Math.random() * 10) + 1; // Число от 1 до 10
