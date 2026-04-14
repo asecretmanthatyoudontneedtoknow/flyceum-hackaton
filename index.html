@@ -34,24 +34,23 @@
         @keyframes modalIn { from { opacity: 0; } to { opacity: 1; } }
 
         .hero-banner {
-            background-image: url('https://school.petropavl.sko-bilim.agartu.kz/ru/images/preview?id=207-1-91?auto=format&fit=crop&w=1500&q=80');
+            background-image: url('https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1500&q=80');
             background-size: cover;
             background-position: center;
         }
 
-        /* --- НОВЫЙ ДИЗАЙН РАЗРЕЗА БАННЕРА --- */
+        /* --- ДИЗАЙН РАЗРЕЗА БАННЕРА --- */
         .hero-overlay {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background-color: rgba(15, 23, 42, 0.65); /* Легкое затемнение */
-            backdrop-filter: blur(2px); /* Уменьшенный блюр */
+            background-color: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(2px);
             z-index: 0;
         }
         @media (min-width: 1024px) {
             .hero-overlay {
-                width: 75%; /* Занимает только левую часть */
-                /* Тот самый скос параллелограмма */
+                width: 75%; 
                 clip-path: polygon(0 0, 85% 0, 100% 100%, 0% 100%); 
             }
         }
@@ -155,7 +154,7 @@
                     <div class="lg:col-span-7 space-y-6 sm:space-y-8">
                         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-brand-500 text-white text-[9px] font-black uppercase tracking-[0.2em] shadow-lg">Лучшие из лучших</div>
                         <h1 class="text-4xl sm:text-5xl lg:text-8xl font-black tracking-tighter leading-tight sm:leading-none text-white italic">
-                            <span id="hero-title"></span>
+                            <span id="hero-title">Проектируй будущее.</span>
                         </h1>
                         <div class="text-base sm:text-lg text-slate-300 max-w-2xl font-medium leading-relaxed">
                             <p>КГУ «Первый городской общеобразовательный IT-лицей» — это передовое образовательное пространство. Интеграция фундаментальных наук и цифровых технологий.</p>
@@ -472,18 +471,25 @@
                 };
 
                 let tHtml = '';
+                
+                const fallbackImg = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='200' viewBox='0 0 150 200'%3E%3Crect width='150' height='200' fill='%23eff6ff'/%3E%3Ctext x='50%25' y='50%25' font-family='sans-serif' font-weight='bold' font-size='16' fill='%233b82f6' text-anchor='middle' dy='.3em'%3EФОТО%3C/text%3E%3C/svg%3E";
+
                 for(const [cat, list] of Object.entries(teachersByCat)) {
                     tHtml += `<h3 class="text-xl sm:text-2xl font-black italic uppercase mt-8 sm:mt-12 mb-4 sm:mb-6 text-brand-600 border-b pb-3 sm:pb-4">${cat}</h3>`;
                     tHtml += `<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">`;
+                    
                     list.forEach(t => {
-                        // Используем onerror для подстраховки, если фотки не будет на сервере
+                        // Прямая ссылка на твой GitHub
+                        const imgUrl = `https://raw.githubusercontent.com/asecretmanthatyoudontneedtoknow/flyceum-hackaton/refs/heads/main/teacher/${t.i}`;
+                        
                         tHtml += `
                         <div class="border-card p-4 flex flex-col items-center text-center hover:border-brand-500 hover:shadow-lg transition">
-                            <img src="http://flyceum.ru/image/teacher/${t.i}" onerror="this.src='https://via.placeholder.com/150x200/eff6ff/3b82f6?text=Фото'" class="w-24 h-32 sm:w-28 sm:h-36 object-cover rounded-xl shadow-sm mb-3 sm:mb-4 border border-slate-100">
+                            <img src="${imgUrl}" onerror="this.onerror=null; this.src='${fallbackImg}'" class="w-24 h-32 sm:w-28 sm:h-36 object-cover rounded-xl shadow-sm mb-3 sm:mb-4 border border-slate-100 bg-brand-50">
                             <h4 class="font-black text-xs sm:text-sm text-slate-900 leading-tight mb-2">${t.n}</h4>
                             <p class="text-[9px] sm:text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed mt-auto">${t.r}</p>
                         </div>`;
                     });
+                    
                     tHtml += `</div>`;
                 }
                 document.getElementById('teachers-container').innerHTML = tHtml;
@@ -645,6 +651,10 @@
         <div id="page-pride" class="page-section">
             <h2 class="text-4xl sm:text-5xl font-black italic mb-6 sm:mb-8 uppercase tracking-tighter">Наша гордость</h2>
             
+            <div class="flex flex-wrap gap-2 sm:gap-3 mb-6 sm:mb-8" id="pride-buttons">
+                <button onclick="switchPrideTab('nom-1')" class="pride-tab active border border-slate-200 px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:border-brand-500 transition">Выдающиеся выпускники</button>
+                <button onclick="switchPrideTab('nom-2')" class="pride-tab border border-slate-200 px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:border-brand-500 transition">Алтын Белгі</button>
+            </div>
 
             <div class="border-card p-6 sm:p-8 min-h-[300px]">
                 <div id="nom-1" class="pride-content active">
