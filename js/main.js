@@ -1,31 +1,52 @@
 import { db } from './firebase-cfg.js';
-import { collection, getDocs, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { collection, getDocs, query, addDoc, serverTimestamp, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const DAYS = ['Понедельник','Вторник','Среда','Четверг','Пятница', 'Суббота'];
-const BELL_PRESETS = { 45: { label: '45 мин', breaks:[5,15,10,15,10,5,5] } };
+const BELL_PRESETS = { 
+    45: { label: '45 мин', breaks:[5,15,10,15,10,5,5] },
+    40: { label: '40 мин', breaks:[5,10,5,10,10,5,5] },
+    35: { label: '35 мин', breaks:[5,10,5,10,10,5,5] },
+    30: { label: '30 мин', breaks:[5,10,5,10,10,5,5] }
+};
 const slogans = ["Архитектура будущего.", "Хочешь быть первым — учись в Первом!", "Традиции прошлого — технологии будущего.", "Твой шаг к успешной карьере."];
 
 let state = { activePreset: 45, firstLessonStart: '08:05', schedule: {} };
 let newsData = [];
+let currentCaptchaAnswer = 0; // Переменная для хранения правильного ответа каптчи
+
+// --- СИНХРОНИЗАЦИЯ НАСТРОЕК ---
+function listenToScheduleSettings() {
+    onSnapshot(doc(db, "settings", "schedule"), (docSnap) => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            const today = new Date().toDateString();
+            if (data.lessonDuration !== 45 && data.dateSet !== today) {
+                state.activePreset = 45;
+            } else {
+                state.activePreset = data.lessonDuration || 45;
+            }
+        } else {
+            state.activePreset = 45;
+        }
+        updateClassWidget(); 
+    });
+}
 
 // --- ЛОКАЛЬНАЯ ЗАГРУЗКА РАСПИСАНИЯ ---
 async function loadSchedule() {
     try {
         const response = await fetch('schedule.json');
         if (!response.ok) throw new Error("Файл не найден");
-        
         const rawData = await response.json();
         let classesData = {};
 
         rawData.forEach(item => {
             const day = item.day;
             const num = parseInt(item.lesson_num);
-            
             for (const [cls, info] of Object.entries(item.classes)) {
                 const cleanCls = cls.trim();
                 if (!classesData[cleanCls]) classesData[cleanCls] = {};
                 if (!classesData[cleanCls][day]) classesData[cleanCls][day] = [];
-                
                 let roomStr = info.room === "---" || info.room === "" ? "—" : info.room;
                 classesData[cleanCls][day].push({ lesson: num, subject: info.subject, room: roomStr });
             }
@@ -34,9 +55,7 @@ async function loadSchedule() {
         state.schedule = classesData;
         updateClassWidget();
     } catch (e) {
-        console.error("Ошибка загрузки локального расписания:", e);
         document.getElementById('currentStatus').innerHTML = '<div class="py-10 text-center text-red-500 font-bold">Файл schedule.json не найден!</div>';
-        document.getElementById('daySchedule').innerHTML = '';
     }
 }
 
@@ -65,7 +84,7 @@ function getCurrentLesson() {
     for (let b of bells) {
         const [sh, sm] = b.start.split(':').map(Number);
         const start = sh * 60 + sm;
-        const end = start + 45;
+        const end = start + parseInt(state.activePreset);
         if (curMins >= start && curMins < end) return { type: 'lesson', num: b.num, remaining: end - curMins };
         if (curMins >= end && curMins < end + b.breakAfter) return { type: 'break', remaining: end + b.breakAfter - curMins };
     }
@@ -77,7 +96,6 @@ function updateClassWidget() {
     let dayIndex = new Date().getDay() - 1;
     if (dayIndex < 0) dayIndex = 0; 
     const dayName = DAYS[dayIndex];
-    
     const container = document.getElementById('currentStatus');
 
     if (!state.schedule[cls]) {
@@ -89,16 +107,29 @@ function updateClassWidget() {
     const sched = state.schedule[cls];
     const status = getCurrentLesson();
 
+    const presetLabel = state.activePreset === 45 ? '' : `<span class="bg-red-500 text-white px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ml-2 animate-pulse">Уроки по ${state.activePreset} мин</span>`;
+
     if (!status || status.type === 'free') {
-        container.innerHTML = `<div class="py-10 text-center"><h3 class="text-xl text-slate-400 font-black italic">Уроки завершены / Отдых</h3></div>`;
+        container.innerHTML = `<div class="py-10 text-center"><h3 class="text-xl text-slate-400 font-black italic">Уроки завершены / Отдых</h3>${presetLabel}</div>`;
     } else if (status.type === 'lesson') {
         const lessons = (sched[dayName] || []).filter(l => l.lesson === status.num);
         let subjText = lessons.length > 0 ? lessons.map(l => l.subject).join(' / ') : 'Нет урока';
         let roomText = lessons.length > 0 ? lessons.map(l => l.room).join(' / ') : '—';
 
-        container.innerHTML = `<div class="flex justify-between mb-6"><div><p class="text-[10px] font-black text-brand-500 uppercase">Сейчас идет</p><h3 class="text-xl font-black italic truncate max-w-[200px]">${subjText}</h3></div><div class="bg-brand-50 p-2 rounded-xl text-brand-700 font-black text-[10px] h-max border border-brand-100">Каб. ${roomText}</div></div><div class="py-6 text-center border-y border-slate-100"><div class="text-7xl font-black">${status.remaining}m</div><p class="text-[10px] font-black text-slate-300 uppercase mt-2">Осталось</p></div>`;
+        container.innerHTML = `
+            <div class="flex justify-between mb-6">
+                <div>
+                    <p class="text-[10px] font-black text-brand-500 uppercase flex items-center">Сейчас идет ${presetLabel}</p>
+                    <h3 class="text-xl font-black italic truncate max-w-[200px] mt-1">${subjText}</h3>
+                </div>
+                <div class="bg-brand-50 p-2 rounded-xl text-brand-700 font-black text-[10px] h-max border border-brand-100">Каб. ${roomText}</div>
+            </div>
+            <div class="py-6 text-center border-y border-slate-100">
+                <div class="text-7xl font-black">${status.remaining}m</div>
+                <p class="text-[10px] font-black text-slate-300 uppercase mt-2">Осталось</p>
+            </div>`;
     } else {
-        container.innerHTML = `<div class="py-10 text-center"><h3 class="text-xl font-black uppercase tracking-widest text-brand-600 underline">Перемена</h3><div class="text-5xl font-black mt-2">${status.remaining}m</div></div>`;
+        container.innerHTML = `<div class="py-10 text-center"><h3 class="text-xl font-black uppercase tracking-widest text-brand-600 underline flex justify-center items-center gap-2">Перемена ${presetLabel}</h3><div class="text-5xl font-black mt-2">${status.remaining}m</div></div>`;
     }
     
     renderDaySchedule(cls, dayName);
@@ -160,14 +191,11 @@ async function loadNews() {
                     <p class="text-slate-500 text-sm mt-auto truncate">${n.body}</p>
                 </div>`;
         });
-
     } catch (e) { 
-        console.error("News error", e); 
         container.innerHTML = `<div class="col-span-3 text-red-500 font-bold p-4 bg-red-50 rounded-xl">Ошибка базы данных: ${e.message}</div>`;
     }
 }
 
-// --- УПРАВЛЕНИЕ ОКНОМ ---
 window.openNews = function(id) {
     const news = newsData.find(n => n.id === id);
     if (!news) return;
@@ -193,49 +221,127 @@ window.closeNews = function() {
     setTimeout(() => { document.getElementById('modal-img').src = ''; }, 300);
 };
 
-// --- ГЛАВНАЯ ФУНКЦИЯ НАВИГАЦИИ ---
-window.showPage = function(id) {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    // Переключаем контентные секции
-    document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active-page'));
-    const target = document.getElementById('page-' + id);
-    if (target) target.classList.add('active-page');
-    
-    // Сбрасываем активности всех кнопок навигации
-    document.querySelectorAll('.top-nav-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.mobile-nav-btn').forEach(btn => btn.classList.remove('active'));
+// --- ВИРТУАЛЬНАЯ ПРИЕМНАЯ И КАПТЧА ---
+const GEMINI_API_KEY = '';
 
-    // Включаем активность для нужных кнопок (ПК + Мобилка)
-    document.querySelectorAll(`.top-nav-btn[onclick*="'${id}'"]`).forEach(btn => btn.classList.add('active'));
-    document.querySelectorAll(`.mobile-nav-btn[onclick*="'${id}'"]`).forEach(btn => btn.classList.add('active'));
+function generateCaptcha() {
+    const num1 = Math.floor(Math.random() * 10) + 1; // Число от 1 до 10
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    currentCaptchaAnswer = num1 + num2;
+    
+    const captchaEl = document.getElementById('captcha-question');
+    const captchaInput = document.getElementById('rec-captcha');
+    
+    if (captchaEl) captchaEl.innerText = `${num1} + ${num2} = ?`;
+    if (captchaInput) captchaInput.value = '';
+}
 
-    // Логика темной темы и дождя
-    if (id === 'fund') {
-        document.body.classList.add('dark-theme');
-        if (typeof window.startRain === 'function') window.startRain();
-    } else {
-        document.body.classList.remove('dark-theme');
-        if (typeof window.stopRain === 'function') window.stopRain();
+async function checkTextWithAI(text) {
+    const badWordsRegex = /хуй|пизд|еба|ебн|бля|шлюх|мраз|урод|сука|сучк/i; 
+    
+    if (!GEMINI_API_KEY || GEMINI_API_KEY === '') {
+        if (badWordsRegex.test(text.toLowerCase())) return "БЛОК: Найдена нецензурная лексика.";
+        return "ОК";
     }
-};
 
-// --- ИНИЦИАЛИЗАЦИЯ (ОДИН РАЗ!) ---
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{
+                        text: `Ты строгий модератор школьного сайта. Проверь этот текст на маты (включая завуалированные), оскорбления, токсичность, угрозы или унижение достоинства учителей и учеников. 
+                        Если текст нормальный, ответь ровно одно слово: "ОК".
+                        Если текст содержит нарушения, ответь строго в формате: "БЛОК: [напиши причину коротко]".
+                        Текст для проверки: "${text}"`
+                    }]
+                }]
+            })
+        });
+
+        const data = await response.json();
+        if (data.candidates && data.candidates[0].content.parts[0].text) {
+            const aiResponse = data.candidates[0].content.parts[0].text.trim();
+            if (aiResponse.toUpperCase().includes("ОК")) return "ОК";
+            return aiResponse;
+        }
+        return "ОК"; 
+    } catch (err) {
+        if (badWordsRegex.test(text.toLowerCase())) return "БЛОК: Найдена нецензурная лексика.";
+        return "ОК"; 
+    }
+}
+
+document.getElementById('reception-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const errorBox = document.getElementById('rec-error');
+    const successBox = document.getElementById('rec-success');
+    const loadingScreen = document.getElementById('reception-loading');
+
+    errorBox.classList.add('hidden');
+    successBox.classList.add('hidden');
+
+    // 1. ПРОВЕРКА КАПТЧИ
+    const userAnswer = parseInt(document.getElementById('rec-captcha').value);
+    if (userAnswer !== currentCaptchaAnswer) {
+        errorBox.innerText = "Неверный ответ на проверку от роботов! Попробуйте еще раз.";
+        errorBox.classList.remove('hidden');
+        generateCaptcha(); // Обновляем пример при ошибке
+        return; 
+    }
+
+    // Если каптча пройдена, собираем данные
+    const name = document.getElementById('rec-name').value || 'Аноним';
+    const role = document.getElementById('rec-role').value;
+    const target = document.getElementById('rec-target').value;
+    const message = document.getElementById('rec-message').value;
+
+    loadingScreen.classList.remove('hidden'); 
+    loadingScreen.classList.add('flex');
+
+    // 2. ПРОВЕРКА НЕЙРОСЕТЬЮ
+    const aiResult = await checkTextWithAI(message);
+
+    loadingScreen.classList.add('hidden');
+    loadingScreen.classList.remove('flex');
+
+    if (aiResult !== "ОК") {
+        errorBox.innerText = `Сообщение заблокировано. Причина: ${aiResult.replace("БЛОК:", "").trim()}`;
+        errorBox.classList.remove('hidden');
+        generateCaptcha(); // Обновляем каптчу, чтобы боты не брутфорсили
+        return; 
+    }
+
+    // 3. ОТПРАВКА В БАЗУ
+    try {
+        await addDoc(collection(db, "reception"), {
+            name: name, role: role, target: target, message: message, date: serverTimestamp()
+        });
+        successBox.classList.remove('hidden');
+        document.getElementById('reception-form').reset();
+        generateCaptcha(); // Обновляем для следующего сообщения
+    } catch (error) {
+        errorBox.innerText = `Ошибка базы данных при отправке.`;
+        errorBox.classList.remove('hidden');
+        generateCaptcha();
+    }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Часы
     setInterval(() => { 
         const clock = document.getElementById('live-clock');
         if(clock) clock.innerText = new Date().toLocaleTimeString('ru-RU'); 
     }, 1000);
     
-    // Слоган
     const title = document.getElementById('hero-title');
     if(title) title.innerText = slogans[Math.floor(Math.random() * slogans.length)];
     
-    // Загрузки
     loadSchedule();
     loadNews();
+    listenToScheduleSettings(); 
+    generateCaptcha(); // Инициализация каптчи при загрузке страницы
     
-    // События
     document.getElementById('classSelect').addEventListener('change', updateClassWidget);
 });

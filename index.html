@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Первый IT-лицей | Официальный портал</title>
+    <link rel="shortcut icon" href="http://flyceum.ru/image/site/gerb.ico" type="image/x-icon">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script>
@@ -32,9 +34,26 @@
         @keyframes modalIn { from { opacity: 0; } to { opacity: 1; } }
 
         .hero-banner {
-            background-image: url('https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1500&q=80');
+            background-image: url('https://school.petropavl.sko-bilim.agartu.kz/ru/images/preview?id=207-1-91?auto=format&fit=crop&w=1500&q=80');
             background-size: cover;
             background-position: center;
+        }
+
+        /* --- НОВЫЙ ДИЗАЙН РАЗРЕЗА БАННЕРА --- */
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(15, 23, 42, 0.65); /* Легкое затемнение */
+            backdrop-filter: blur(2px); /* Уменьшенный блюр */
+            z-index: 0;
+        }
+        @media (min-width: 1024px) {
+            .hero-overlay {
+                width: 75%; /* Занимает только левую часть */
+                /* Тот самый скос параллелограмма */
+                clip-path: polygon(0 0, 85% 0, 100% 100%, 0% 100%); 
+            }
         }
 
         /* Кнопки ДЕСКТОПНОГО меню */
@@ -86,11 +105,13 @@
                 <span class="text-lg sm:text-xl font-black tracking-tighter italic">Первый IT-лицей</span>
             </div>
             
-            <div class="hidden xl:flex items-center gap-2 text-[15px]">
+            <div class="hidden xl:flex items-center gap-1 text-[14px]">
                 <button onclick="window.showPage('home')" class="top-nav-btn active">Главная</button>
                 <button onclick="window.showPage('about')" class="top-nav-btn">История</button>
+                <button onclick="window.showPage('teachers')" class="top-nav-btn">Педагоги</button>
                 <button onclick="window.showPage('parents')" class="top-nav-btn">Родителям</button>
                 <button onclick="window.showPage('pride')" class="top-nav-btn">Гордость</button>
+                <button onclick="window.showPage('reception')" class="top-nav-btn text-brand-600 border border-brand-100 bg-brand-50 hover:bg-brand-600 hover:text-white">Приемная</button>
             </div>
 
             <div class="flex items-center gap-2 sm:gap-3 pr-1">
@@ -100,22 +121,26 @@
     </header>
 
     <nav id="bottom-nav" class="xl:hidden fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-slate-200 z-[100] pb-safe transition-colors duration-500">
-        <div class="flex justify-around items-center px-1 pt-2">
-            <button onclick="window.showPage('home')" class="mobile-nav-btn active flex flex-col items-center justify-center w-16 text-slate-400 transition-colors">
-                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Главная</span>
+        <div class="flex justify-around items-center px-1 pt-2 pb-1">
+            <button onclick="window.showPage('home')" class="mobile-nav-btn active flex flex-col items-center justify-center flex-1 text-slate-400 transition-colors">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider">Главная</span>
             </button>
-            <button onclick="window.showPage('about')" class="mobile-nav-btn flex flex-col items-center justify-center w-16 text-slate-400 transition-colors">
-                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <span class="text-[9px] font-bold uppercase tracking-wider">История</span>
+            <button onclick="window.showPage('about')" class="mobile-nav-btn flex flex-col items-center justify-center flex-1 text-slate-400 transition-colors">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider">История</span>
             </button>
-            <button onclick="window.showPage('parents')" class="mobile-nav-btn flex flex-col items-center justify-center w-16 text-slate-400 transition-colors">
-                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Родителям</span>
+            <button onclick="window.showPage('teachers')" class="mobile-nav-btn flex flex-col items-center justify-center flex-1 text-slate-400 transition-colors">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider">Педагоги</span>
             </button>
-            <button onclick="window.showPage('pride')" class="mobile-nav-btn flex flex-col items-center justify-center w-16 text-slate-400 transition-colors">
-                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Гордость</span>
+            <button onclick="window.showPage('parents')" class="mobile-nav-btn flex flex-col items-center justify-center flex-1 text-slate-400 transition-colors">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider">Родителям</span>
+            </button>
+            <button onclick="window.showPage('reception')" class="mobile-nav-btn flex flex-col items-center justify-center flex-1 text-slate-400 transition-colors">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider">Приемная</span>
             </button>
         </div>
     </nav>
@@ -123,13 +148,14 @@
     <main class="flex-grow pt-24 sm:pt-32 pb-8 sm:pb-24 px-4 sm:px-6 max-w-[1500px] mx-auto w-full">
         
         <div id="page-home" class="page-section active-page">
-            <div class="relative rounded-[30px] sm:rounded-[40px] overflow-hidden mb-10 sm:mb-16 p-6 sm:p-8 md:p-16 shadow-2xl hero-banner">
-                <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm z-0"></div>
+            <div class="relative rounded-[30px] sm:rounded-[40px] overflow-hidden mb-10 sm:mb-16 p-6 sm:p-8 md:p-16 shadow-2xl hero-banner bg-slate-900">
+                <div class="hero-overlay"></div>
+
                 <div class="relative z-10 grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                     <div class="lg:col-span-7 space-y-6 sm:space-y-8">
                         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-brand-500 text-white text-[9px] font-black uppercase tracking-[0.2em] shadow-lg">Лучшие из лучших</div>
                         <h1 class="text-4xl sm:text-5xl lg:text-8xl font-black tracking-tighter leading-tight sm:leading-none text-white italic">
-                            <span id="hero-title">Проектируй будущее.</span>
+                            <span id="hero-title"></span>
                         </h1>
                         <div class="text-base sm:text-lg text-slate-300 max-w-2xl font-medium leading-relaxed">
                             <p>КГУ «Первый городской общеобразовательный IT-лицей» — это передовое образовательное пространство. Интеграция фундаментальных наук и цифровых технологий.</p>
@@ -160,6 +186,81 @@
                 </div>
                 <div id="news-container" class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                     <div class="text-slate-400 text-sm italic font-bold">Подключение к базе данных...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-reception" class="page-section">
+            <h2 class="text-4xl sm:text-5xl font-black italic mb-6 sm:mb-8 uppercase tracking-tighter">Виртуальная приемная</h2>
+            <div class="grid lg:grid-cols-12 gap-8">
+                
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="border-card p-6 sm:p-8 bg-brand-600 text-white">
+                        <h3 class="text-xl sm:text-2xl font-black italic uppercase mb-4 text-brand-50">Обратная связь</h3>
+                        <p class="text-sm font-medium leading-relaxed mb-6 opacity-90">Здесь вы можете задать вопрос администрации лицея, оставить предложение или обратиться к психологу.</p>
+                        
+                        <div class="bg-white/10 p-4 rounded-xl mb-4 flex items-start gap-4">
+                            <span class="text-2xl">🤖</span>
+                            <div>
+                                <h4 class="font-bold text-sm">AI Модерация</h4>
+                                <p class="text-xs opacity-80 mt-1">Все сообщения проверяются нейросетью на наличие оскорблений, нецензурной лексики и агрессии. Пожалуйста, будьте вежливы.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7">
+                    <form id="reception-form" class="border-card p-6 sm:p-8 relative overflow-hidden">
+                        
+                        <div id="reception-loading" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 hidden flex-col items-center justify-center">
+                            <div class="animate-spin rounded-full h-12 w-12 border-4 border-brand-500 border-t-transparent mb-4"></div>
+                            <p class="text-sm font-black uppercase tracking-widest text-brand-600">Нейросеть проверяет текст...</p>
+                        </div>
+
+                        <div class="grid sm:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Ваше ФИО (необязательно)</label>
+                                <input type="text" id="rec-name" placeholder="Иванов Иван" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 outline-none focus:border-brand-500 transition">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Ваш статус</label>
+                                <select id="rec-role" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 outline-none focus:border-brand-500 transition">
+                                    <option value="Ученик">Ученик</option>
+                                    <option value="Родитель">Родитель</option>
+                                    <option value="Учитель">Учитель</option>
+                                    <option value="Гость">Гость</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Кому адресовано обращение</label>
+                            <select id="rec-target" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 outline-none focus:border-brand-500 transition">
+                                <option value="Директору">Директору (Новиковой О.Н.)</option>
+                                <option value="Заместителям (Учебная часть)">Заместителям по учебной работе</option>
+                                <option value="Заместителям (Воспитательная часть)">Заместителям по воспитательной работе</option>
+                                <option value="Психологу">Социально-психологической службе</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-6">
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Текст обращения *</label>
+                            <textarea id="rec-message" required placeholder="Опишите вашу проблему, вопрос или предложение..." class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 min-h-[150px] outline-none focus:border-brand-500 transition"></textarea>
+                        </div>
+
+                        <div class="mb-6 bg-slate-50 p-4 rounded-xl flex items-center justify-between gap-4 border border-slate-200 shadow-sm">
+                            <div>
+                                <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Проверка на робота</label>
+                                <div id="captcha-question" class="text-xl font-black tracking-tighter italic text-brand-600 select-none">? + ? =</div>
+                            </div>
+                            <input type="number" id="rec-captcha" required placeholder="Ответ" class="w-24 p-3 border border-slate-300 rounded-xl text-center font-bold text-lg outline-none focus:border-brand-500 transition">
+                        </div>
+
+                        <div id="rec-error" class="hidden mb-6 bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl text-sm font-medium"></div>
+                        <div id="rec-success" class="hidden mb-6 bg-green-50 border border-green-200 text-green-600 p-4 rounded-xl text-sm font-medium">Ваше обращение успешно отправлено и будет рассмотрено администрацией.</div>
+
+                        <button type="submit" class="w-full bg-slate-900 text-white py-4 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-brand-600 transition shadow-lg">Отправить обращение</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -254,6 +355,139 @@
                 </div>
                 
             </div>
+        </div>
+
+        <div id="page-teachers" class="page-section">
+            <h2 class="text-4xl sm:text-5xl font-black italic mb-6 sm:mb-8 uppercase tracking-tighter">Наши педагоги</h2>
+            
+            <div id="teachers-container"></div>
+
+            <script>
+                const teachersByCat = {
+                    "Администрация": [
+                        {n: "Новикова Оксана Николаевна", r: "Директор, учитель информатики", i: "novikova.jpg"},
+                        {n: "Кононова Наталья Львовна", r: "Заместитель директора, учитель музыки", i: "kononova.jpg"},
+                        {n: "Фефелова Виктория Михайловна", r: "Заместитель директора, учитель математики", i: "fefelova.jpg"},
+                        {n: "Шадрин Виталий Викторович", r: "Заместитель директора, учитель химии", i: "shadrin.jpg"},
+                        {n: "Мирошина Татьяна Робертовна", r: "Заместитель директора, учитель информатики", i: "miroshina.jpg"},
+                        {n: "Абилов Мейрам Болатович", r: "Заместитель директора, учитель казахского языка", i: "abilov.jpg"},
+                        {n: "Кроленко Ирина Геннадьевна", r: "Заместитель директора, учитель начальных классов", i: "krolenko.jpg"},
+                        {n: "Шкабура Оксана Николаевна", r: "Заместитель директора, учитель русского языка", i: "shkabura.jpg"}
+                    ],
+                    "МК Казахского языка": [
+                        {n: "Абилов Мейрам Болатович", r: "Заместитель директора, учитель казахского языка", i: "abilov.jpg"},
+                        {n: "Абилова Дилара Абдировна", r: "Учитель казахского языка", i: "abilova.jpg"},
+                        {n: "Валеева Дамели Рамазановна", r: "Учитель казахского языка", i: "valeeva.jpg"},
+                        {n: "Ибраимова Бахыт Малкаровна", r: "Учитель казахского языка", i: "ibraimova.jpg"},
+                        {n: "Кенжибулатова Айнур Сериковна", r: "Учитель казахского языка", i: "kenzhibulatova.jpg"},
+                        {n: "Тулегенова Айгуль Сурагановна", r: "Учитель казахского языка", i: "tulegenova.jpg"},
+                        {n: "Халимулина Индира Куанышевна", r: "Учитель казахского языка", i: "halimulina.jpg"},
+                        {n: "Шопанаева Кульжан Зейнишовна", r: "Учитель казахского языка", i: "shopanaeva.jpg"}
+                    ],
+                    "МК Русского языка": [
+                        {n: "Курленя Елена Руслановна", r: "Учитель русского языка и литературы", i: "kurlenja.jpg"},
+                        {n: "Митрофанова Марина Николаевна", r: "Учитель русского языка и литературы", i: "mitrofanova.jpg"},
+                        {n: "Моргунова Елена Викторовна", r: "Учитель русского языка и литературы", i: "morgunova.jpg"},
+                        {n: "Яковенко Екатерина Евгеньевна", r: "Учитель русского языка и литературы", i: "yakovenko.jpg"},
+                        {n: "Шкабура Оксана Николаевна", r: "Заместитель директора, учитель русского языка", i: "shkabura.jpg"}
+                    ],
+                    "МК Английского языка": [
+                        {n: "Арендаренко Татьяна Владимировна", r: "Учитель английского языка", i: "arendarenko.jpg"},
+                        {n: "Вишнякова Надежда Васильевна", r: "Учитель английского языка", i: "vishnyakova.jpg"},
+                        {n: "Гаврилова Алла Владимировна", r: "Учитель английского языка", i: "gavrilova.jpg"},
+                        {n: "Баева Анна Дмитриевна", r: "Учитель английского языка", i: "baeva.jpg"},
+                        {n: "Таловер Оксана Владимировна", r: "Учитель английского языка", i: "talover.jpg"},
+                        {n: "Ескенеева Сандугаш Махметовна", r: "Учитель английского языка", i: "eskeneeva.jpg"},
+                        {n: "Садкеева Джамиля Асалбековна", r: "Учитель английского языка", i: "sadkeeva.jpg"},
+                        {n: "Сафарян Карине Андраниковна", r: "Учитель английского языка", i: "safaryan.jpg"}
+                    ],
+                    "МК Математики": [
+                        {n: "Бобровская Татьяна Владимировна", r: "Учитель математики", i: "bobrovskaya.jpg"},
+                        {n: "Майстренко Оксана Васильевна", r: "Учитель математики", i: "maystrenko.jpg"},
+                        {n: "Малая Алёна Александровна", r: "Учитель математики", i: "malaya_a.jpg"},
+                        {n: "Пионткевич Марина Павловна", r: "Учитель математики", i: "piontkevich.jpg"},
+                        {n: "Рамазанова Алия Ендаулетовна", r: "Учитель математики", i: "ramazanova.jpg"},
+                        {n: "Фефелова Виктория Михайловна", r: "Учитель математики", i: "fefelova.jpg"},
+                        {n: "Русакова Ольга Станиславовна", r: "Учитель математики", i: "rusakova.jpg"},
+                        {n: "Мирвода Наталья Владимировна", r: "Учитель математики", i: "mirvoda.jpg"}
+                    ],
+                    "МК Физики": [
+                        {n: "Землякова Елена Николаевна", r: "Учитель физики", i: "zemlyakova.jpg"},
+                        {n: "Космынина Елена Витальевна", r: "Учитель физики", i: "kosmynina.jpg"},
+                        {n: "Леушин Геннадий Николаевич", r: "Учитель физики", i: "leushin.jpg"}
+                    ],
+                    "МК Истории": [
+                        {n: "Беленкова Наталья Юрьевна", r: "Учитель истории", i: "belenkova.jpg"},
+                        {n: "Никулин Сергей Владимирович", r: "Учитель истории", i: "nikulin.jpg"},
+                        {n: "Тлеубаев Руслан Каирлаевич", r: "Учитель истории", i: "tleubaev.jpg"}
+                    ],
+                    "МК Естественно-географического цикла": [
+                        {n: "Жукова Наталья Викторовна", r: "Заместитель директора, учитель географии", i: "zhukova.jpg"},
+                        {n: "Мукатаева Дина Александровна", r: "Учитель географии", i: "mukataeva.jpg"},
+                        {n: "Пешкин Дмитрий Николаевич", r: "Учитель географии", i: "peshkin.jpg"},
+                        {n: "Казанцева Елена Нектарьевна", r: "Учитель биологии", i: "kazanceva.jpg"},
+                        {n: "Шадрин Виталий Викторович", r: "Заместитель директора, учитель химии", i: "shadrin.jpg"},
+                        {n: "Ющенко Роман Александрович", r: "Педагог-профориентатор, учитель географии", i: "juchenko.jpg"}
+                    ],
+                    "МК Информатики": [
+                        {n: "Новикова Оксана Николаевна", r: "Директор лицея, учитель информатики", i: "novikova.jpg"},
+                        {n: "Мирошина Татьяна Робертовна", r: "Заместитель директора, учитель информатики", i: "miroshina.jpg"},
+                        {n: "Калинина Наталья Владимировна", r: "Учитель информатики", i: "kalinina.jpg"},
+                        {n: "Вакин Виктор Константинович", r: "Учитель информатики", i: "vakin.jpg"}
+                    ],
+                    "МК Эстетического цикла": [
+                        {n: "Кононова Наталья Львовна", r: "Заместитель директора, учитель музыки", i: "kononova.jpg"},
+                        {n: "Синикова Екатерина Николаевна", r: "Учитель черчения", i: "sinikova.jpg"},
+                        {n: "Сирозодтинова Елена Александровна", r: "Учитель рисования", i: "sirozodtinova.jpg"},
+                        {n: "Бикчентаева Гульсина Фаритовна", r: "Учитель музыки", i: "bikchenaeva.jpg"}
+                    ],
+                    "МК Физической культуры": [
+                        {n: "Крылова Ольга Викторовна", r: "Учитель физкультуры", i: "krylova.jpg"},
+                        {n: "Мануйлов Александр Петрович", r: "Учитель физкультуры", i: "manuylov.jpg"},
+                        {n: "Скоба Александр Петрович", r: "Учитель физкультуры", i: "skoba.jpg"},
+                        {n: "Шереметьева Екатерина Андреевна", r: "Учитель физкультуры", i: "sheremeteva.jpg"},
+                        {n: "Яншин Шамиль Мифтахович", r: "Учитель физкультуры", i: "yanshin.jpg"}
+                    ],
+                    "МК Начальных классов": [
+                        {n: "Кроленко Ирина Геннадьевна", r: "Заместитель директора, учитель начальных классов", i: "krolenko.jpg"},
+                        {n: "Донец Ольга Казимировна", r: "Учитель начальных классов", i: "donec.jpg"},
+                        {n: "Хованская Анастасия Александровна", r: "Учитель начальных классов", i: "hovanskaya.jpg"},
+                        {n: "Садыкова Ольга Иосифовна", r: "Учитель начальных классов", i: "sadykova.jpg"},
+                        {n: "Слапинскене Наталья Эдуардовна", r: "Учитель начальных классов", i: "slapenskine.jpg"},
+                        {n: "Якишина Татьяна Викторовна", r: "Учитель начальных классов", i: "yakishina.jpg"},
+                        {n: "Углова Лилия Алексеевна", r: "Учитель начальных классов", i: "uglova.jpg"},
+                        {n: "Чепурнова Татьяна Владимировна", r: "Учитель начальных классов", i: "chepurnova.jpg"},
+                        {n: "Четверова Марина Витальевна", r: "Учитель начальных классов", i: "chetverova.jpg"},
+                        {n: "Михеда Наталья Александровна", r: "Учитель начальных классов", i: "miheda.jpg"},
+                        {n: "Михалёва Ольга Анатольевна", r: "Учитель начальных классов", i: "mihalyova.jpg"},
+                        {n: "Пухальская Ольга Владимировна", r: "Учитель начальных классов", i: "puhalskaya.jpg"},
+                        {n: "Нуртазина Балгыз Аскаровна", r: "Учитель начальных классов", i: "nurtazina.jpg"},
+                        {n: "Алпысова Асель Кайратовна", r: "Учитель начальных классов", i: "alpjisova.jpg"}
+                    ],
+                    "Социально-психологическая служба": [
+                        {n: "Ющенко Роман Александрович", r: "Педагог-профориентатор, учитель географии", i: "juchenko.jpg"},
+                        {n: "Касымова Салтанат Еркеновна", r: "Социальный педагог", i: "kasymova.jpg"},
+                        {n: "Пономарева Марина Андреевна", r: "Педагог-психолог", i: "ponomareva.jpg"}
+                    ]
+                };
+
+                let tHtml = '';
+                for(const [cat, list] of Object.entries(teachersByCat)) {
+                    tHtml += `<h3 class="text-xl sm:text-2xl font-black italic uppercase mt-8 sm:mt-12 mb-4 sm:mb-6 text-brand-600 border-b pb-3 sm:pb-4">${cat}</h3>`;
+                    tHtml += `<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">`;
+                    list.forEach(t => {
+                        // Используем onerror для подстраховки, если фотки не будет на сервере
+                        tHtml += `
+                        <div class="border-card p-4 flex flex-col items-center text-center hover:border-brand-500 hover:shadow-lg transition">
+                            <img src="http://flyceum.ru/image/teacher/${t.i}" onerror="this.src='https://via.placeholder.com/150x200/eff6ff/3b82f6?text=Фото'" class="w-24 h-32 sm:w-28 sm:h-36 object-cover rounded-xl shadow-sm mb-3 sm:mb-4 border border-slate-100">
+                            <h4 class="font-black text-xs sm:text-sm text-slate-900 leading-tight mb-2">${t.n}</h4>
+                            <p class="text-[9px] sm:text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed mt-auto">${t.r}</p>
+                        </div>`;
+                    });
+                    tHtml += `</div>`;
+                }
+                document.getElementById('teachers-container').innerHTML = tHtml;
+            </script>
         </div>
 
         <div id="page-passport" class="page-section">
@@ -411,7 +645,6 @@
         <div id="page-pride" class="page-section">
             <h2 class="text-4xl sm:text-5xl font-black italic mb-6 sm:mb-8 uppercase tracking-tighter">Наша гордость</h2>
             
-         
 
             <div class="border-card p-6 sm:p-8 min-h-[300px]">
                 <div id="nom-1" class="pride-content active">
@@ -503,7 +736,7 @@
         <div id="page-fund" class="page-section">
             <div class="border-card overflow-hidden">
                 <div class="bg-slate-900 text-white p-6 sm:p-10 md:p-16 flex flex-col md:flex-row gap-6 sm:gap-10 items-center text-center md:text-left">
-                    <img src="http://flyceum.ru/image/site/ASS.jpg" alt="А.С. Слухаевский" class="w-40 sm:w-48 h-48 sm:h-56 object-cover rounded-2xl shadow-2xl border-4 border-slate-700">
+                    <img src="http://flyceum.ru/image/teacher/ASS.jpg" alt="А.С. Слухаевский" class="w-40 sm:w-48 h-48 sm:h-56 object-cover rounded-2xl shadow-2xl border-4 border-slate-700">
                     <div>
                         <h2 class="text-3xl sm:text-4xl md:text-5xl font-black italic mb-3 sm:mb-4 uppercase tracking-tighter text-brand-400">Мудрый и добрый учитель...</h2>
                         <h3 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Слухаевский Александр Сергеевич</h3>
@@ -537,7 +770,7 @@
 
     </main>
 
-    <footer class="bg-white border-t border-slate-200 pt-12 sm:pt-16 pb-8 sm:pb-12 px-6 mt-auto">
+    <footer class="bg-white border-t border-slate-200 pt-12 sm:pt-16 pb-8 sm:pb-12 px-6 mt-auto mb-16 xl:mb-0">
         <div class="max-w-[1500px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 mb-8">
             <div class="space-y-4 sm:space-y-6">
                 <h3 class="text-lg sm:text-xl font-black text-slate-900 uppercase">ПЕРВЫЙ IT-ЛИЦЕЙ</h3>
@@ -565,11 +798,11 @@
             <div>
                 <h4 class="font-black text-slate-900 text-sm sm:text-base mb-4 sm:mb-6">Жизнь лицея</h4>
                 <ul class="space-y-3 sm:space-y-4 text-xs sm:text-sm text-slate-500 font-medium">
+                    <li><a href="#" onclick="window.showPage('teachers'); return false;" class="hover:text-brand-600 transition">Наши педагоги</a></li>
                     <li><a href="#" onclick="window.showPage('parents'); return false;" class="hover:text-brand-600 transition">Родителям</a></li>
                     <li><a href="#" onclick="window.showPage('pride'); return false;" class="hover:text-brand-600 transition">Наша гордость</a></li>
                     <li><a href="#" onclick="window.showPage('sports'); return false;" class="hover:text-brand-600 transition">Спортивные достижения</a></li>
                     <li><a href="#" onclick="window.showPage('fund'); return false;" class="hover:text-brand-600 transition">Фонд им. А.С. Слухаевского</a></li>
-                    <li class="pt-2"><a href="admin.html" target="_blank" class="text-brand-600 font-bold hover:text-brand-800 transition">Панель управления (Admin)</a></li>
                 </ul>
             </div>
 
@@ -610,7 +843,6 @@
     <script type="module" src="js/main.js"></script>
     
     <script>
-        // Дождь
         let rainInterval = null;
 
         window.startRain = function() {
@@ -675,7 +907,6 @@
             }, 1000);
         }
 
-        // Обновленная функция навигации, которая понимает и мобильные, и десктопные кнопки
         window.showPage = function(id) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             
@@ -683,11 +914,9 @@
             const target = document.getElementById('page-' + id);
             if (target) target.classList.add('active-page');
             
-            // Сбрасываем стили у ВСЕХ кнопок
             document.querySelectorAll('.top-nav-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.mobile-nav-btn').forEach(btn => btn.classList.remove('active'));
 
-            // Добавляем стиль активной кнопки для выбранной страницы (и десктоп, и мобилка)
             document.querySelectorAll(`.top-nav-btn[onclick*="'${id}'"]`).forEach(btn => btn.classList.add('active'));
             document.querySelectorAll(`.mobile-nav-btn[onclick*="'${id}'"]`).forEach(btn => btn.classList.add('active'));
 
