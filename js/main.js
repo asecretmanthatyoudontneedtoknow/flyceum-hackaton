@@ -239,7 +239,7 @@ function generateCaptcha() {
 }
 
 async function checkTextWithAI(text) {
-    const badWordsRegex = /хуй|пизд|еба|ебн|бля|шлюх|мраз|урод|сука|сучк/i; 
+    const badWordsRegex = /хуй|лох|пизд|еба|ебн|бля|шлюх|мраз|урод|сука|сучк/i; 
     
     if (!OPENAI_API_KEY || OPENAI_API_KEY === '') {
         if (badWordsRegex.test(text.toLowerCase())) return "БЛОК: Найдена нецензурная лексика.";
